@@ -7,6 +7,6 @@ Materiale didattico per gli studenti del Liceo Classico Statale «Francesco Vivo
 Non è una pubblicazione ufficiale dell'istituto; il sigillo è di fantasia.
 
 - Su computer: timeline orizzontale a «scatole cinesi» (clic su un periodo per aprirlo).
-- Su telefono: timeline verticale per secoli.
+- Su telefono: timeline verticale «a fisarmonica»: una fascia principale apribile e le altre tre come binari paralleli.
 
 Tutto è contenuto in `index.html` (HTML + JavaScript, nessuna dipendenza da installare).

@@ -129,14 +129,14 @@ h1 span{color:var(--gold)}
 #pnav button{border-left:4px solid var(--c,#999)}
 
 
-/* =================== versione mobile: linea del tempo verticale =================== */
+/* =================== versione mobile: linea del tempo verticale a fisarmonica =================== */
 #mob{display:none}
 body.mobile #pnav,body.mobile #stage,body.mobile footer,body.mobile #zin,body.mobile #zout,body.mobile #tip{display:none!important}
-body.mobile #mob{display:block;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body.mobile #mob{display:block;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;position:relative}
 body.mobile header{padding:10px 14px 12px;gap:8px 12px}
 body.mobile #logo{width:44px;height:44px}
 body.mobile .titles{min-width:0;flex:1}
-body.mobile .school{font-size:10px;letter-spacing:.1em}
+body.mobile .school{font-size:9.5px;letter-spacing:.08em}
 body.mobile h1{font-size:19px}
 body.mobile .tag{display:none}
 body.mobile .controls{width:100%;flex-wrap:nowrap}
@@ -145,57 +145,61 @@ body.mobile .search input{width:100%;font-size:16px}
 body.mobile #results{right:0}
 body.mobile .controls .btn{padding:6px 10px;font-size:13px;white-space:nowrap}
 
-.m-top{position:sticky;top:0;z-index:5;background:rgba(255,253,248,.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);box-shadow:0 4px 12px -8px rgba(0,0,0,.3)}
-.m-row{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;scrollbar-width:none}
-.m-row::-webkit-scrollbar{display:none}
-.m-row+.m-row{padding-top:0}
-.m-f{flex:none;border:2px solid var(--g);background:var(--g);color:#fff;border-radius:16px;padding:4px 11px;font:600 13px 'Titillium Web'}
-.m-f.off{background:transparent;color:var(--g);opacity:.7}
-.m-c{flex:none;border:0;background:#ece4d2;color:var(--ink);border-radius:12px;padding:3px 10px;font:700 13px 'Cinzel',serif;min-width:44px}
-.m-c.on{background:var(--crimson);color:#fff}
-.m-sec{position:relative;padding:0 14px 6px 40px}
-.m-sec::before{content:"";position:absolute;left:21px;top:0;bottom:0;width:3px;border-radius:2px;background:linear-gradient(var(--line),#cfc3a8)}
-.m-sh{position:sticky;top:var(--mtop,90px);z-index:3;margin:0 -14px 8px -40px;padding:8px 14px 8px 40px;background:linear-gradient(90deg,var(--navy),#24496b);color:#fff;display:flex;align-items:baseline;gap:10px}
-.m-sh b{font:700 18px 'Cinzel',serif;letter-spacing:.04em}
-.m-sh small{font:italic 14px 'EB Garamond',serif;color:#c9d6e3}
-.m-era{position:relative;margin:10px 0;padding:8px 12px;border-radius:10px;background:var(--c);color:#fff;font:700 12px 'Cinzel',serif;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;width:100%;border:0;text-align:left}
-.m-era span{font:600 12px 'Titillium Web';letter-spacing:0;text-transform:none;opacity:.85}
-.mc{position:relative;margin:10px 0;background:var(--paper2);border-radius:12px;box-shadow:0 2px 8px rgba(23,50,77,.12);border-left:6px solid var(--c)}
-.mc::before{content:"";position:absolute;left:-31px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px var(--paper)}
-.mc>summary{list-style:none;cursor:pointer;padding:10px 44px 10px 12px;position:relative;display:block}
-.mc>summary::-webkit-details-marker{display:none}
-.mc>summary::after{content:"▾";position:absolute;right:12px;top:12px;width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--c) 15%,#fff);color:var(--c);display:grid;place-items:center;font-size:13px;transition:transform .25s}
-.mc[open]>summary::after{transform:rotate(180deg)}
-.mc-tag{display:block;font:700 10.5px 'Titillium Web';letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
-.mc-t{display:block;font:700 19px/1.15 'Cinzel',serif;color:var(--ink);margin:2px 0}
-.mc-d{font:italic 15px 'EB Garamond',serif;color:var(--muted)}
-.mc-cards{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font:700 13.5px 'Titillium Web';color:var(--ink)}
-.mc-cards i{font-style:normal;color:var(--gold)}
-.mc-b{padding:0 12px 12px;animation:mopen .3s ease}
-@keyframes mopen{from{opacity:0;transform:translateY(-6px)}}
-.mc-info{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--c);color:var(--tc);border-radius:16px;padding:5px 12px;font:600 13px 'Titillium Web';margin:2px 0 10px}
-.mk{margin:8px 0;border-radius:10px;background:color-mix(in srgb,var(--c) 9%,#fffdf8);border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
-.mk>summary{list-style:none;cursor:pointer;padding:8px 36px 8px 10px;position:relative;font:700 15px 'Titillium Web';color:color-mix(in srgb,var(--c) 75%,#000)}
-.mk>summary::-webkit-details-marker{display:none}
-.mk>summary small{font:600 12px 'Titillium Web';color:var(--muted);margin-left:6px}
-.mk>summary::after{content:"+";position:absolute;right:12px;top:6px;color:var(--c);font-size:18px}
-.mk[open]>summary::after{content:"–"}
-.mk .mlist{padding:0 8px 8px}
-.mk .mk-i{border:0;background:none;padding:0 2px 6px;font:600 13px 'Titillium Web';color:var(--crimson);text-decoration:underline;align-self:flex-start}
-.mlist{display:flex;flex-direction:column;gap:2px}
-.mlh{font:700 11px 'Titillium Web';letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
-.mm{display:grid;grid-template-columns:18px 1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;border:0;background:none;text-align:left;padding:7px 4px;border-radius:8px;width:100%;color:var(--ink)}
-.mm:active,.mm:hover{background:#f1e9d8}
-.mm .dot{grid-row:1/3;width:12px;height:12px;border-radius:50%;background:var(--c);justify-self:center}
-.mm.ev .dot{border-radius:2px;transform:rotate(45deg)}
-.mm.big .dot{width:auto;height:auto;background:none;color:var(--gold);font-style:normal;font-size:17px;line-height:1}
-.mm.big .dot::before{content:"★"}
-.mm-n{font:700 15.5px/1.2 'Titillium Web'}
-.mm.big .mm-n{font-size:16.5px}
-.mm-d{font:600 12.5px 'Titillium Web';color:var(--muted);white-space:nowrap}
-.mm-s{grid-column:2/4;font:14px/1.25 'EB Garamond',serif;color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mm.flash,.mk.flash{animation:flash 1.6s ease 2}
-.m-foot{padding:24px 18px 40px;text-align:center;font:italic 14px 'EB Garamond',serif;color:var(--muted)}
+.mt{position:sticky;top:0;z-index:20;background:rgba(255,253,248,.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);box-shadow:0 4px 12px -8px rgba(0,0,0,.35)}
+.mt-sel{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 6px;scrollbar-width:none}
+.mt-sel::-webkit-scrollbar{display:none}
+.mt-sel .lbl{flex:none;align-self:center;font:700 10px 'Titillium Web';letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mt-f{flex:none;border:2px solid var(--g);background:transparent;color:var(--g);border-radius:16px;padding:3px 10px;font:700 12.5px 'Titillium Web'}
+.mt-f.on{background:var(--g);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.mt-cols{position:relative;height:58px;border-top:1px solid var(--line)}
+.mt-year{position:absolute;left:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:center;font:700 17px/1 'Cinzel',serif;color:var(--crimson)}
+.mt-year small{font:600 9px 'Titillium Web';letter-spacing:.1em;color:var(--muted);margin-top:3px;text-transform:uppercase}
+.mt-tr{position:absolute;top:4px;bottom:4px;writing-mode:vertical-rl;transform:rotate(180deg);font:700 9.5px 'Titillium Web';letter-spacing:.06em;text-transform:uppercase;color:var(--g);display:flex;align-items:center;justify-content:center;white-space:nowrap;border:0;background:none;padding:0}
+.mt-main{position:absolute;top:0;bottom:0;right:8px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.mt-main b{font:700 14px 'Cinzel',serif;color:var(--g);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt-main span{font:italic 14px/1.2 'EB Garamond',serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.tl{position:relative}
+.tk{position:absolute;left:0;height:1px;background:#b9ad93}
+.tk.c{background:rgba(23,50,77,.4);height:2px}
+.tkl{position:absolute;font:600 10.5px 'Titillium Web';color:var(--muted);transform:translateY(-50%);white-space:nowrap}
+.tkl.c{font:700 12px 'Cinzel',serif;color:var(--navy);line-height:1.05;text-align:center}
+.tkl.c small{display:block;font:700 9px 'Titillium Web';color:var(--crimson)}
+.era2{position:absolute;width:5px;border-radius:3px}
+.grid{position:absolute;height:1px;background:rgba(23,50,77,.13);pointer-events:none}
+.seg{position:absolute;border-radius:6px;border:1px solid rgba(255,255,255,.7);overflow:hidden;padding:0;cursor:pointer;writing-mode:vertical-rl;transform:rotate(180deg);font:700 10px/1 'Titillium Web';display:flex;align-items:center;justify-content:center;white-space:nowrap;text-overflow:ellipsis;color:var(--tc);background:var(--c)}
+.seg span{overflow:hidden;text-overflow:ellipsis;max-height:100%;padding:4px 0}
+.sdot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;border:3px solid var(--c);box-shadow:0 1px 3px rgba(0,0,0,.35);padding:0;z-index:3}
+.sdot::after{content:"";position:absolute;inset:-10px}
+.mb{position:absolute;border-radius:10px;background:color-mix(in srgb,var(--c) 10%,#fffdf8);border-left:5px solid var(--c);box-shadow:0 1px 4px rgba(23,50,77,.1)}
+.mb.open{background:color-mix(in srgb,var(--c) 14%,#fffdf8);box-shadow:0 4px 14px rgba(23,50,77,.18)}
+.mbh{position:sticky;top:var(--mtop,110px);z-index:4;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:0 8px 0 0;background:var(--c);color:var(--tc);cursor:pointer;min-height:30px}
+.mbh b{font:700 13.5px/1.1 'Cinzel',serif;flex:1;min-width:0}
+.mbh small{font:600 11px 'Titillium Web';opacity:.85;white-space:nowrap}
+.mbh .i{flex:none;width:22px;height:22px;border-radius:50%;border:0;background:rgba(255,255,255,.3);color:inherit;font:italic 700 13px/22px 'EB Garamond',serif;padding:0}
+.mbh .chev{flex:none;font-size:12px;transition:transform .25s}
+.mb.open .chev{transform:rotate(180deg)}
+.ax{position:absolute;width:2px;background:color-mix(in srgb,var(--c) 55%,transparent);border-radius:1px}
+.kb{position:absolute;width:16px;border-radius:5px;writing-mode:vertical-rl;transform:rotate(180deg);font:700 9.5px/1 'Titillium Web';color:var(--tc);background:var(--c);display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;border:0;padding:0;opacity:.92}
+.kb span{overflow:hidden;text-overflow:ellipsis;max-height:100%;padding:3px 0}
+.ch{position:absolute;border:0;text-align:left;align-items:flex-start;background:var(--paper2);border-radius:9px;box-shadow:0 1px 4px rgba(23,50,77,.18);padding:4px 8px 4px 10px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;animation:chin .35s ease both;color:var(--ink)}
+.ch::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.ch .n,.ch .d{max-width:100%}
+.ch .n{font:700 14px/1.15 'Titillium Web';white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch .d{font:600 11.5px/1.2 'Titillium Web';color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.big{box-shadow:0 0 0 2px var(--gold),0 2px 6px rgba(0,0,0,.2)}
+.ch.big .n::before{content:"★ ";color:var(--gold)}
+.ch.ev .n{font-style:italic}
+.ch.card{background:none;box-shadow:none;padding:0 0 0 10px;flex-direction:row;align-items:center;justify-content:flex-start;gap:6px}
+.ch.card::before{display:none}
+.ch.card .n{font-size:13.5px}
+.ch.card.au .n::before{content:"★ ";color:var(--gold)}
+.ch.card .d{font-size:11px}
+.cd{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #fff;z-index:2}
+.cd.ev{border-radius:2px;transform:rotate(45deg)}
+@keyframes chin{from{transform:translateX(10px)}}
+.flash{animation:flash 1.6s ease 2}
+.m-foot{position:absolute;left:0;right:0;text-align:center;font:italic 13px/1.4 'EB Garamond',serif;color:var(--muted);padding:0 16px}
 body.mobile dialog{width:100vw;max-width:100vw;margin:auto 0 0;max-height:90vh;border-radius:18px 18px 0 0}
 body.mobile dialog[open]{animation:sheet .32s cubic-bezier(.2,1,.3,1)}
 @keyframes sheet{from{transform:translateY(40%);opacity:.4}}
@@ -1014,8 +1018,8 @@ function zoom(f, clientX){
 }
 $("#zin").onclick = () => zoom(1.25);
 $("#zout").onclick = () => zoom(0.8);
-$("#openall").onclick = () => { if (MQ.matches){ mob.querySelectorAll(".mc:not([hidden])").forEach(c => { c.open = true; fillCard(c); }); return; } ROWS.forEach(r => r.periods.forEach(p => open.add(p.id))); render(); };
-$("#closeall").onclick = () => { if (MQ.matches){ mob.querySelectorAll("details[open]").forEach(c => c.open = false); return; } open.clear(); render(); };
+$("#openall").onclick = () => { if (MQ.matches){ ROWS.find(r => r.id === mainRow).periods.forEach(p => mOpen.add(p.id)); mLayout(); return; } ROWS.forEach(r => r.periods.forEach(p => open.add(p.id))); render(); };
+$("#closeall").onclick = () => { if (MQ.matches){ mOpen.clear(); mLayout(); return; } open.clear(); render(); };
 
 /* ---------- tooltip, evidenziazione, click ---------- */
 const tip = $("#tip");
@@ -1227,127 +1231,208 @@ function buildLogo(){
 }
 
 /* =====================================================================
-   VERSIONE MOBILE — linea del tempo verticale a scatole
-   Stessi dati: i periodi delle quattro fasce scorrono dall'alto in
-   basso per secolo; ogni periodo si apre nelle sue articolazioni e
-   nei suoi protagonisti; ogni nome apre la scheda dal basso.
+   VERSIONE MOBILE — linea del tempo verticale «a fisarmonica»
+   Il tempo scorre dall'alto in basso su una scala proporzionale.
+   Una fascia è la linea principale (larga, con periodi apribili);
+   le altre tre corrono accanto come binari sottili. Aprire un periodo
+   allunga il tempo solo lì, per fare spazio ai suoi protagonisti:
+   la scala resta una sola, condivisa da tutte le fasce.
    ===================================================================== */
 const MQ = matchMedia("(max-width: 760px)");
 const mob = $("#mob");
-const hiddenRows = new Set();
-let mobBuilt = false;
-const yr = a => a < 1200 ? "fine XII sec." : a;
-function kidsMembers(p, k){
-  const r = ROWS.find(r => r.id === p.row);
-  return (p.row === "li" || p.row === "le")
-    ? r.members.filter(m => m.root === p.id && m.per && m.per.includes(k.id))
-    : r.members.filter(m => m.root === p.id && flOf(m) >= k.a && flOf(m) < k.b);
+let mobBuilt = false, mainRow = "li";
+const mOpen = new Set();
+const S0 = 3.4, MY0 = 1200, MY1 = 1925;
+let knots = [], mGeo = {};
+
+function flYear(m){
+  if (CARD[m.id]) return CARD[m.id][0];
+  if (FL[m.id]) return FL[m.id];
+  if (m.k === "e") return m.a;
+  const ws = (m.w || []).map(w => parseInt((String(w[0]).match(/\d{4}/) || [])[0])).filter(Boolean);
+  if (ws.length) return Math.min(...ws);
+  return Math.min(m.b ?? m.a, m.a + 30);
 }
-function mRow(m){
-  return `<button class="mm${m.big ? " big" : ""}${m.k === "e" ? " ev" : ""}" data-id="${m.id}" style="--c:${colorOf(m)}"><i class="dot"></i><span class="mm-n">${m.n}</span><span class="mm-d">${dateLabel(m)}</span>${m.sub ? `<span class="mm-s">${m.sub}</span>` : ""}</button>`;
+/* posizione verticale di un anno: interpolazione lineare tra i nodi */
+function yOf(y){
+  if (y <= knots[0][0]) return knots[0][1];
+  let lo = 0, hi = knots.length - 1;
+  while (hi - lo > 1){ const mid = (lo + hi) >> 1; if (knots[mid][0] <= y) lo = mid; else hi = mid; }
+  const [ya, pa] = knots[lo], [yb, pb] = knots[hi];
+  if (y >= yb) return pb;
+  return pa + (pb - pa) * (y - ya) / (yb - ya);
 }
-function fillCard(card){
-  if (card.dataset.filled) return;
-  const p = BY[card.dataset.pid], r = ROWS.find(r => r.id === p.row);
-  const all = r.members.filter(m => m.root === p.id).sort((a,b) => a.a - b.a);
-  let h = `<button class="mc-info" data-id="${p.id}">ⓘ Scheda del periodo</button>`;
-  const placed = new Set();
-  for (const k of p.kidsList){
-    const ms = kidsMembers(p, k).sort((a,b) => a.a - b.a);
-    ms.forEach(m => placed.add(m.id));
-    h += `<details class="mk" data-kid="${k.id}" style="--c:${k.c}"><summary>${k.n}<small>${yr(k.a)}–${k.b}${ms.length ? " · " + ms.length : ""}</small></summary>
-      <div class="mlist"><button class="mk-i" data-id="${k.id}">Che cos'è?</button>${ms.map(mRow).join("")}</div></details>`;
+function yearAt(px){
+  for (let i = 0; i < knots.length - 1; i++){
+    const [ya, pa] = knots[i], [yb, pb] = knots[i+1];
+    if (px >= pa && px <= pb) return pb === pa ? ya : ya + (yb - ya) * (px - pa) / (pb - pa);
   }
-  const rest = all.filter(m => !placed.has(m.id));
-  if (rest.length){
-    h += `<div class="mlh">${p.kidsList.length ? "Altri protagonisti" : (p.row === "li" || p.row === "le") ? "Autori" : "Protagonisti ed eventi"}</div>`;
-    h += `<div class="mlist">${rest.map(mRow).join("")}</div>`;
-  }
-  card.querySelector(".mc-b").innerHTML = h;
-  card.dataset.filled = 1;
+  return px < knots[0][1] ? MY0 : MY1;
 }
+
 function buildMobile(){
   mobBuilt = true;
-  const strands = ROWS.map(r => `<button class="m-f" data-strand="${r.id}" style="--g:${r.g}">${r.label}</button>`).join("");
-  let cents = ""; for (let c = 13; c <= 20; c++) cents += `<button class="m-c" data-cent="${c}">${roman(c)}</button>`;
-  // periodi di primo livello di tutte le fasce + soglie delle grandi età, in ordine cronologico
-  const order = {macro:-1, he:0, hi:1, le:2, li:3};
-  const ev = [...MACRO.map(e => ({e, era:1})), ...ROWS.flatMap(r => r.periods.map(e => ({e})))]
-    .sort((x,y) => Math.max(x.e.a,1200) - Math.max(y.e.a,1200) || order[x.e.row] - order[y.e.row]);
-  let html = `<div class="m-top"><div class="m-row">${strands}</div><div class="m-row">${cents}</div></div>`;
-  for (let c = 13; c <= 20; c++){
-    const from = (c-1)*100, to = from + 99;
-    html += `<section class="m-sec" data-cent="${c}"><div class="m-sh"><b>${roman(c)} secolo</b><small>${c === 20 ? "1900 – 1925" : from + " – " + to}</small></div>`;
-    for (const {e, era} of ev.filter(x => { const a = Math.max(x.e.a, 1200); return a >= from && a <= to; })){
-      if (era){ html += `<button class="m-era" data-id="${e.id}" style="--c:${e.c}">${e.a < 1200 ? "" : e.a + " · "}${e.n}<span>scheda ›</span></button>`; continue; }
-      const r = ROWS.find(r => r.id === e.row);
-      const cards = r.members.filter(m => CARD[m.id] && m.root === e.id).sort((a,b) => CARD[a.id][0] - CARD[b.id][0])
-        .map(m => `<span>${r.id === "li" || r.id === "le" ? "<i>★</i> " : ""}${CARD[m.id][1]}</span>`).join("");
-      html += `<details class="mc" data-pid="${e.id}" data-row="${r.id}" style="--c:${e.c};--tc:${textOn(e.c)};--g:${r.g}">
-        <summary><span class="mc-tag">${r.label}</span><span class="mc-t">${e.n}</span><span class="mc-d">${yr(e.a)} – ${e.b > 1920 ? "1925" : e.b}</span>${cards ? `<span class="mc-cards">${cards}</span>` : ""}</summary>
-        <div class="mc-b"></div></details>`;
-    }
-    html += `</section>`;
-  }
-  html += `<div class="m-foot">Materiale didattico per gli studenti del Liceo Classico «Francesco Vivona» · Roma<br>Tocca un periodo per aprirlo, un nome per la sua scheda.<br><small>Non è una pubblicazione ufficiale dell'istituto.</small></div>`;
-  mob.innerHTML = html;
-  const top = mob.querySelector(".m-top");
-  const setTop = () => mob.style.setProperty("--mtop", top.offsetHeight + "px");
-  setTop(); new ResizeObserver(setTop).observe(top);
-  mob.addEventListener("toggle", ev => { if (ev.target.classList.contains("mc") && ev.target.open) fillCard(ev.target); }, true);
+  mob.innerHTML = `<div class="mt"><div class="mt-sel"><span class="lbl">Linea principale</span>${ROWS.map(r => `<button class="mt-f" data-main="${r.id}" style="--g:${r.g}">${r.label}</button>`).join("")}</div><div class="mt-cols"></div></div><div class="tl"></div>`;
+  const mt = mob.querySelector(".mt");
+  const setTop = () => mob.style.setProperty("--mtop", mt.offsetHeight + "px");
+  setTop(); new ResizeObserver(setTop).observe(mt);
   mob.addEventListener("click", ev => {
-    const f = ev.target.closest("[data-strand]");
-    if (f){
-      const id = f.dataset.strand;
-      if (hiddenRows.has(id)) hiddenRows.delete(id); else if (hiddenRows.size < 3) hiddenRows.add(id);
-      mob.querySelectorAll(".m-f").forEach(b => b.classList.toggle("off", hiddenRows.has(b.dataset.strand)));
-      mob.querySelectorAll(".mc").forEach(c => c.hidden = hiddenRows.has(c.dataset.row));
-      return;
-    }
-    const c = ev.target.closest("button[data-cent]");
-    if (c){ const s = mob.querySelector(`section[data-cent="${c.dataset.cent}"]`); mob.scrollTo({top: s.offsetTop - top.offsetHeight + 1, behavior:"smooth"}); return; }
+    const s = ev.target.closest("[data-main]");
+    if (s){ setMain(s.dataset.main); return; }
+    const i = ev.target.closest(".mbh .i");
+    if (i){ openEntry(i.dataset.id); return; }
+    const h = ev.target.closest(".mbh");
+    if (h){ mToggle(h.dataset.pid); return; }
     const t = ev.target.closest("[data-id]");
-    if (t){ ev.preventDefault(); openEntry(t.dataset.id); }
+    if (t) openEntry(t.dataset.id);
   });
-  // il secolo in vista è evidenziato nella barra
-  const cbtn = [...mob.querySelectorAll(".m-c")], secs = [...mob.querySelectorAll("section")];
-  let cur = null;
-  mob.addEventListener("scroll", () => {
-    const y = mob.scrollTop + top.offsetHeight + 10;
-    let s = secs[0]; for (const x of secs) if (x.offsetTop <= y) s = x;
-    if (s.dataset.cent !== cur){
-      cur = s.dataset.cent;
-      cbtn.forEach(b => b.classList.toggle("on", b.dataset.cent === cur));
-      const on = cbtn.find(b => b.classList.contains("on"));
-      on.parentElement.scrollTo({left: on.offsetLeft - 60, behavior:"smooth"});
+  mob.addEventListener("scroll", mReadout, {passive:true});
+  addEventListener("resize", () => { if (MQ.matches) mLayout(); });
+  mLayout();
+}
+function setMain(id){
+  if (id === mainRow) return;
+  const yTop = yearAt(mob.scrollTop + 40);
+  mainRow = id; mOpen.clear(); mLayout();
+  mob.scrollTop = yOf(yTop) - 40;
+}
+function mToggle(pid, force){
+  const p = BY[pid];
+  const before = yOf(Math.max(p.a, MY0)) - mob.scrollTop;
+  const want = force ?? !mOpen.has(pid);
+  if (want) mOpen.add(pid); else mOpen.delete(pid);
+  mLayout();
+  const top = yOf(Math.max(p.a, MY0));
+  mob.scrollTop = want ? top - Math.max(0, Math.min(before, mob.clientHeight * .25)) : top - before;
+}
+
+function mLayout(){
+  const W = mob.querySelector(".tl").clientWidth || mob.clientWidth || innerWidth;
+  const main = ROWS.find(r => r.id === mainRow), sides = ROWS.filter(r => r.id !== mainRow);
+  // colonne
+  const RW = 46, TW = 20, TG = 4, tx0 = RW + 4;
+  const mainX = tx0 + sides.length * (TW + TG) + 6, mainW = W - mainX - 8;
+  // 1. nodi del tempo: ogni elemento chiede il suo spazio verticale
+  const A = [];
+  const add = (year, h, ord, ref) => A.push({year: Math.min(Math.max(year, MY0), MY1), h, ord, ref});
+  for (let c = MY0; c <= 1900; c += 100) add(c, 0, 0);
+  add(MY1, 0, 0);
+  sides.forEach(r => r.periods.forEach(p => add(p.a, 0, 0)));
+  MACRO.forEach(p => add(p.a, 0, 0));
+  for (const p of main.periods){
+    const a = Math.max(p.a, MY0), open = mOpen.has(p.id);
+    add(a, 40, 1, {head: p});
+    const mem = main.members.filter(m => m.root === p.id);
+    if (open){
+      p.kidsList.forEach(k => add(Math.max(k.a, a), 0, 0));
+      mem.forEach(m => add(Math.min(Math.max(flYear(m), a), p.b - .01), 46, 2, {chip: m, p}));
+    } else {
+      mem.filter(m => CARD[m.id]).forEach(m => add(Math.min(Math.max(CARD[m.id][0], a), p.b - .01), 26, 2, {card: m, p}));
     }
-  }, {passive:true});
-  mob.dispatchEvent(new Event("scroll"));
+  }
+  A.sort((x, y) => x.year - y.year || x.ord - y.ord || (x.ref && y.ref && x.ref.chip && y.ref.chip ? x.ref.chip.a - y.ref.chip.a : 0));
+  let pos = 10, lastY = MY0, lastH = 0;
+  knots = [];
+  for (const a of A){
+    pos = pos + Math.max(S0 * (a.year - lastY), lastH);
+    a.pos = pos; lastY = a.year; lastH = a.h;
+    if (!knots.length || knots[knots.length-1][0] !== a.year) knots.push([a.year, pos]);
+  }
+  // per gli anni tra due nodi si parte dall'ultimo elemento dello stesso anno
+  const lastAt = {}; A.forEach(a => lastAt[a.year] = a.pos);
+  knots = knots.map(([y, p], i) => [y, p]);
+  const k2 = [];
+  for (const [y, p] of knots){ k2.push([y, p]); if (lastAt[y] > p) k2.push([y + 1e-6, lastAt[y]]); }
+  knots = k2;
+  const H = pos + lastH + 70;
+
+  const tl = mob.querySelector(".tl");
+  let h = "";
+  // 2. righello degli anni (si infittisce dove il tempo è allungato)
+  MACRO.forEach(e => { const t = yOf(Math.max(e.a, MY0)), b = yOf(Math.min(e.b, MY1)); h += `<div class="era2" style="left:${RW - 7}px;top:${t}px;height:${b - t - 2}px;background:${e.c}" data-id="${e.id}"></div>`; });
+  for (let y = MY0; y <= MY1; y += 5){
+    const py = yOf(y), gap10 = yOf(Math.min(y + 10, MY1)) - py, gap50 = yOf(Math.min(y + 50, MY1)) - py;
+    if (y % 100 === 0){
+      h += `<div class="tk c" style="top:${py}px;width:${RW - 10}px"></div><div class="grid" style="left:${RW}px;width:${W - RW}px;top:${py}px"></div>`;
+      h += `<div class="tkl c" style="left:2px;width:${RW - 12}px;top:${py + 14}px">${y}<small>${roman(y/100 + 1)} sec.</small></div>`;
+    } else if (y % 50 === 0 && gap50 > 44){ h += `<div class="tk" style="top:${py}px;width:12px;left:${RW - 22}px"></div><div class="tkl" style="left:3px;top:${py}px">${y}</div>`; }
+    else if (y % 10 === 0 && gap10 > 22){ h += `<div class="tk" style="top:${py}px;width:8px;left:${RW - 18}px"></div><div class="tkl" style="left:5px;top:${py}px;font-size:9.5px">${y}</div>`; }
+    else if (y % 10 === 0 && gap10 > 8){ h += `<div class="tk" style="top:${py}px;width:6px;left:${RW - 16}px"></div>`; }
+  }
+  // 3. binari laterali
+  sides.forEach((r, i) => {
+    const x = tx0 + i * (TW + TG);
+    r.periods.forEach(p => {
+      const t = yOf(Math.max(p.a, MY0)), b = yOf(Math.min(p.b, MY1));
+      h += `<button class="seg" data-id="${p.id}" style="left:${x}px;top:${t}px;width:${TW}px;height:${Math.max(6, b - t - 2)}px;--c:${p.c};--tc:${textOn(p.c)}"><span>${p.n}</span></button>`;
+    });
+    r.members.filter(m => CARD[m.id]).forEach(m => {
+      h += `<button class="sdot" data-id="${m.id}" style="left:${x + TW/2}px;top:${yOf(CARD[m.id][0])}px;--c:${colorOf(m)}" aria-label="${m.n}"></button>`;
+    });
+  });
+  // 4. linea principale: periodi, articolazioni, protagonisti
+  for (const p of main.periods){
+    const a = Math.max(p.a, MY0), t = yOf(a), b = yOf(Math.min(p.b, MY1)), open = mOpen.has(p.id);
+    h += `<div class="mb${open ? " open" : ""}" style="left:${mainX}px;top:${t}px;width:${mainW}px;height:${b - t - 3}px;--c:${p.c};--tc:${textOn(p.c)}">
+      <div class="mbh" data-pid="${p.id}"><b>${p.n}</b><small>${p.a < 1200 ? "…" : p.a}–${p.b > 1920 ? "1925" : p.b}</small><button class="i" data-id="${p.id}" aria-label="Scheda">i</button><span class="chev">▾</span></div></div>`;
+    let kidW = 0;
+    if (open && p.kidsList.length){
+      const ks = p.kidsList.map(k => ({e:k, x0:Math.max(k.a, a), x1:Math.min(k.b, p.b)})).sort((x,y) => x.x0 - y.x0);
+      const n = lanes(ks, 0); kidW = n * 19;
+      ks.forEach(g => {
+        const kt = Math.max(yOf(g.x0), t + 40), kb2 = yOf(g.x1);
+        h += `<button class="kb" data-id="${g.e.id}" style="left:${mainX + 5 + g.lane * 19}px;top:${kt}px;height:${Math.max(18, kb2 - kt - 3)}px;--c:${g.e.c};--tc:${textOn(g.e.c)}"><span>${g.e.n}</span></button>`;
+      });
+    }
+    const axX = mainX + 10 + kidW;
+    h += `<div class="ax" style="left:${axX}px;top:${t + 34}px;height:${Math.max(0, b - t - 40)}px;--c:${p.c}"></div>`;
+    for (const an of A.filter(x => x.ref && (x.ref.chip || x.ref.card) && x.ref.p === p)){
+      const m = an.ref.chip || an.ref.card, col = colorOf(m), isCard = !!an.ref.card;
+      const cx = axX + 1, chX = axX + 10;
+      const lit = m.row === "li" || m.row === "le";
+      h += `<i class="cd${m.k === "e" ? " ev" : ""}" style="left:${cx}px;top:${an.pos + (isCard ? 11 : 20)}px;--c:${col}"></i>`;
+      if (isCard) h += `<button class="ch card${lit ? " au" : ""}" data-id="${m.id}" style="left:${chX}px;top:${an.pos}px;right:12px;height:22px;--c:${col}"><span class="n">${CARD[m.id][1]}</span><span class="d">${CARD[m.id][0]}</span></button>`;
+      else h += `<button class="ch${m.big ? " big" : ""}${m.k === "e" ? " ev" : ""}" data-id="${m.id}" style="left:${chX}px;top:${an.pos}px;right:14px;height:40px;--c:${col}"><span class="n">${m.n}</span><span class="d">${dateLabel(m)}${m.sub ? " · " + m.sub : ""}</span></button>`;
+    }
+  }
+  h += `<div class="m-foot" style="top:${H - 56}px">Materiale didattico per gli studenti del Liceo Classico «Francesco Vivona» · Roma<br>Non è una pubblicazione ufficiale dell'istituto.</div>`;
+  tl.style.height = H + "px";
+  tl.innerHTML = h;
+  // intestazione delle colonne
+  mob.querySelectorAll(".mt-f").forEach(b => b.classList.toggle("on", b.dataset.main === mainRow));
+  const short = {he:"Storia EU", hi:"Storia ITA", le:"Lett. EU", li:"Lett. ITA"};
+  mob.querySelector(".mt-cols").innerHTML = `<div class="mt-year" style="width:${RW}px"><span id="m-y">1200</span><small id="m-e"></small></div>` +
+    sides.map((r, i) => `<button class="mt-tr" data-main="${r.id}" style="left:${tx0 + i * (TW + TG)}px;width:${TW}px;--g:${r.g}">${short[r.id]}</button>`).join("") +
+    `<div class="mt-main" style="left:${mainX}px;--g:${main.g}"><b>${main.label}</b><span id="m-p"></span></div>`;
+  mReadout();
+}
+function mReadout(){
+  const yEl = $("#m-y"); if (!yEl || !knots.length) return;
+  const y = Math.round(yearAt(mob.scrollTop + 46));
+  yEl.textContent = Math.max(MY0, Math.min(MY1, y));
+  const main = ROWS.find(r => r.id === mainRow);
+  const p = main.periods.find(p => p.a <= y && p.b > y), era = MACRO.find(e => e.a <= y && e.b > y);
+  $("#m-p").textContent = p ? p.n : "";
+  $("#m-e").textContent = era ? ({"m-med":"Medioevo","m-mod":"Età mod.","m-con":"Età cont."})[era.id] : "";
 }
 function mobFlash(id){
   const e = BY[id];
-  if (e.row === "macro"){ const b = mob.querySelector(`.m-era[data-id="${id}"]`); if (b) b.scrollIntoView({behavior:"smooth", block:"center"}); return; }
-  const pid = e.root || PARENT[id] || id;
-  const card = mob.querySelector(`.mc[data-pid="${pid}"]`); if (!card) return;
-  if (card.hidden){
-    hiddenRows.delete(card.dataset.row);
-    mob.querySelector(`.m-f[data-strand="${card.dataset.row}"]`).classList.remove("off");
-    mob.querySelectorAll(`.mc[data-row="${card.dataset.row}"]`).forEach(c => c.hidden = false);
-  }
-  card.open = true; fillCard(card);
-  let t = PARENT[id] ? card.querySelector(`.mk[data-kid="${id}"]`) : card.querySelector(`.mm[data-id="${id}"]`);
-  t = t || card;
-  const k = t.closest(".mk"); if (k) k.open = true;
-  requestAnimationFrame(() => {
-    const r = t.getBoundingClientRect(), mr = mob.getBoundingClientRect();
-    mob.scrollTo({top: mob.scrollTop + r.top - mr.top - mob.clientHeight / 3, behavior:"smooth"});
-    t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
-  });
+  if (e.row !== "macro" && e.row !== mainRow){ mainRow = e.row; mOpen.clear(); }
+  const root = e.root || PARENT[id] || (e.lvl === 1 ? id : null);
+  if (root && (e.root || PARENT[id] || (e.kidsList && e.kidsList.length))) mOpen.add(root);
+  mLayout();
+  setTimeout(() => {
+    const t = mob.querySelector(`.ch[data-id="${id}"],.kb[data-id="${id}"],.mbh[data-pid="${id}"],.seg[data-id="${id}"]`);
+    const tlTop = mob.querySelector(".tl").offsetTop;
+    const y = tlTop + (t ? (t.classList.contains("mbh") ? t.parentElement.offsetTop : t.offsetTop) : yOf(Math.max(e.a, MY0)));
+    mob.scrollTop = Math.max(0, y - mob.clientHeight / 3);
+    if (t){ t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash"); }
+  }, 30);
 }
 function applyMode(){
   const m = MQ.matches;
   document.body.classList.toggle("mobile", m);
-  if (m){ if (!mobBuilt) buildMobile(); }
+  if (m){ if (!mobBuilt) buildMobile(); else mLayout(); }
   else { render(); scrollToYear(1290, false); }
 }
 
