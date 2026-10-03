@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sette secoli di letteratura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#17324d; --slate:#455b71; --steel:#51758d; --crimson:#d1344c; --gold:#c99a2e;
+  --paper:#f6f1e6; --paper2:#fffdf8; --ink:#1d2733; --muted:#5b6b7a; --line:#ddd3bf;
+  --labw:168px; --lh:30px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{display:flex;flex-direction:column;background:var(--paper);color:var(--ink);font-family:'Titillium Web',system-ui,sans-serif;overflow:hidden}
+
+/* ---------- header ---------- */
+header{background:linear-gradient(120deg,#0f2438 0%,var(--navy) 45%,#24496b 100%);color:#fff;display:flex;align-items:center;gap:16px;padding:10px 18px;flex-wrap:wrap;position:relative;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--crimson),#e67e22,#16a085,#2e86de,#8e44ad,var(--gold))}
+#logo{width:62px;height:62px;flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+.titles{flex:1;min-width:240px}
+.school{font:600 12px/1.2 'Titillium Web';letter-spacing:.14em;text-transform:uppercase;color:#c9d6e3}
+.school b{color:#fff}
+h1{margin:2px 0 0;font:700 clamp(19px,2.4vw,28px)/1.1 'Cinzel',serif;letter-spacing:.02em}
+h1 span{color:var(--gold)}
+.tag{font:italic 15px/1.2 'EB Garamond',serif;color:#d8e2ec;margin-top:2px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.search{position:relative}
+.search input{width:220px;padding:7px 12px 7px 32px;border-radius:20px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font:15px 'Titillium Web';outline:none}
+.search input::placeholder{color:#b8c7d6}
+.search input:focus{background:rgba(255,255,255,.2);border-color:var(--gold)}
+.search svg{position:absolute;left:10px;top:9px;width:15px;height:15px;stroke:#c9d6e3}
+#results{position:absolute;top:110%;left:0;right:-60px;background:var(--paper2);color:var(--ink);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.3);overflow:hidden;display:none;z-index:50}
+#results button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;border:0;background:none;padding:8px 12px;font:15px 'Titillium Web';cursor:pointer;color:var(--ink)}
+#results button:hover,#results button.sel{background:#efe6d3}
+#results i{width:10px;height:10px;border-radius:50%;flex:none}
+#results small{color:var(--muted);margin-left:auto}
+.btn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:18px;padding:5px 12px;font:600 14px 'Titillium Web';cursor:pointer;min-width:34px}
+.btn:hover{background:rgba(255,255,255,.22)}
+.btn.off{opacity:.45;text-decoration:line-through}
+.grp{display:flex;gap:4px}
+
+/* ---------- period nav ---------- */
+#pnav{display:flex;gap:6px;padding:8px 14px;overflow-x:auto;background:var(--paper2);border-bottom:1px solid var(--line);scrollbar-width:thin;flex:none;align-items:center}
+#pnav button{flex:none;border:0;border-radius:16px;padding:4px 12px;font:600 13px 'Titillium Web';cursor:pointer;background:#e9e1cf;color:var(--ink);transition:all .2s}
+#pnav button.on{background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(23,50,77,.4)}
+#pnav .lbl{font:700 11px 'Titillium Web';letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-right:4px}
+#status{flex:none;margin-left:auto;padding-left:16px;font:15px 'EB Garamond',serif;color:var(--muted);white-space:nowrap}
+#status b{font:700 18px 'Cinzel',serif;color:var(--crimson)}
+
+/* ---------- stage ---------- */
+#stage{position:relative;flex:1;min-height:0}
+#vp{position:absolute;inset:0;overflow:auto;scrollbar-width:thin;overscroll-behavior:contain}
+#vp.drag{cursor:grabbing;user-select:none}
+#cv{position:relative;min-height:100%}
+.cband{position:absolute;top:0;background:rgba(23,50,77,.035);pointer-events:none}
+.cline{position:absolute;top:0;width:1px;background:rgba(23,50,77,.12);pointer-events:none}
+#cursor{position:absolute;top:60px;bottom:0;width:0;border-left:2px dashed rgba(209,52,76,.45);pointer-events:none;z-index:7}
+.ruler{position:sticky;top:0;height:60px;z-index:8;background:rgba(255,253,248,.96);border-bottom:1px solid var(--line)}
+.ruler .corner{position:sticky;left:0;width:var(--labw);height:100%;background:var(--paper2);z-index:3;display:flex;align-items:flex-end;padding:0 0 8px 14px;font:700 11px 'Titillium Web';letter-spacing:.14em;color:var(--muted);text-transform:uppercase;border-right:1px solid var(--line)}
+.era{position:absolute;top:0;height:17px;color:#fff;font:700 10.5px/17px 'Cinzel',serif;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;overflow:clip;cursor:pointer;border-right:2px solid var(--paper2)}
+.era span{position:sticky;left:calc(var(--labw) + 6px);display:inline-block;padding:0 8px}
+.tick{position:absolute;bottom:0;width:1px;background:#a99d84}
+.tick.t10{height:6px}.tick.t50{height:11px;background:#7d725c}.tick.t100{height:43px;background:rgba(23,50,77,.35)}
+.tlab{position:absolute;bottom:12px;font:600 12px 'Titillium Web';color:var(--muted);transform:translateX(-50%)}
+.clab{position:absolute;top:20px;font:700 13px 'Cinzel',serif;color:var(--navy);padding-left:6px;white-space:nowrap}
+.clab small{font:600 11px 'Titillium Web';color:var(--muted);margin-left:4px}
+
+.row{position:relative;border-bottom:1px solid var(--line)}
+.rowlab{position:sticky;left:0;width:var(--labw);height:100%;z-index:6;display:flex;flex-direction:column;padding:12px 10px 0 12px;background:var(--paper);border-left:6px solid var(--g);border-right:1px solid var(--line);box-shadow:4px 0 8px -6px rgba(0,0,0,.25)}
+.rowlab b{font:700 15px/1.1 'Cinzel',serif;color:var(--g)}
+.rowlab small{font:13px/1.2 'EB Garamond',serif;color:var(--muted);font-style:italic;margin-top:3px}
+.rowlab .rl-btn{margin-top:8px;align-self:flex-start;border:1px solid var(--line);background:var(--paper2);border-radius:12px;padding:1px 9px;font:600 12px 'Titillium Web';color:var(--muted);cursor:pointer}
+.rowlab .rl-btn:hover{color:var(--ink);border-color:var(--muted)}
+
+/* scatola aperta */
+.box{position:absolute;z-index:1;border:2px solid var(--c);border-radius:12px;background:color-mix(in srgb,var(--c) 7%,#fffdf8);box-shadow:0 8px 22px rgba(0,0,0,.12);animation:boxin .35s cubic-bezier(.2,1.1,.4,1) both}
+.box::before{content:"";position:absolute;left:var(--tip);top:-9px;width:14px;height:14px;background:inherit;border-left:2px solid var(--c);border-top:2px solid var(--c);transform:rotate(45deg)}
+@keyframes boxin{from{opacity:0;transform:translateY(-8px) scaleY(.96)}}
+.box .bh{position:absolute;left:10px;top:5px;font:700 10.5px 'Titillium Web';letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--c) 70%,#000);white-space:nowrap}
+/* items */
+.item,.band{position:absolute;cursor:pointer;z-index:2}
+.item{height:20px;border-radius:10px;background:var(--c);color:var(--tc);font:600 12.5px/20px 'Titillium Web';white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.18);transition:transform .15s,box-shadow .15s,opacity .25s,filter .25s}
+.item .lb{display:inline-block;padding:0 9px;position:sticky;left:calc(var(--labw) + 4px)}
+.item.out .lb{position:absolute;left:100%;top:0;padding-left:6px;color:var(--ink);text-shadow:0 0 3px var(--paper),0 0 3px var(--paper)}
+.item.c0{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,transparent),var(--c) 26px)}
+.item.c0 .lb{padding-left:14px}
+.item.c1{background:linear-gradient(90deg,var(--c) calc(100% - 26px),color-mix(in srgb,var(--c) 55%,transparent))}
+.item.c0.c1{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,transparent),var(--c) 26px,var(--c) calc(100% - 26px),color-mix(in srgb,var(--c) 55%,transparent))}
+.item.big{height:22px;line-height:22px;margin-top:-1px;font-weight:700;font-size:13.5px;box-shadow:0 0 0 2px var(--gold),0 3px 9px rgba(0,0,0,.28)}
+.item.big .lb::before{content:"★ ";color:var(--gold)}
+.item.out.big .lb{color:var(--ink)}
+.item.ev{border-radius:4px;background:repeating-linear-gradient(135deg,var(--c) 0 9px,color-mix(in srgb,var(--c) 78%,#fff) 9px 18px)}
+.item.pt{width:0!important;background:none;box-shadow:none}
+.item.pt::before{content:"";position:absolute;left:-7px;top:3px;width:14px;height:14px;transform:rotate(45deg);background:var(--c);border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.item.pt .lb{position:absolute;left:12px;top:0;padding-left:2px;color:var(--ink);text-shadow:0 0 3px var(--paper),0 0 3px var(--paper)}
+.item:hover{transform:translateY(-2px);box-shadow:0 0 0 2px #fff,0 6px 14px rgba(0,0,0,.3);z-index:5}
+.item.pt:hover{box-shadow:none}
+.band{height:30px;border-radius:7px;background:var(--c);color:var(--tc);font:700 13px/30px 'Titillium Web';white-space:nowrap;overflow:clip;border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);transition:filter .2s,transform .15s}
+.band span{position:sticky;left:calc(var(--labw) + 6px);display:inline-block;padding:0 10px}
+.band.sub{height:24px;line-height:24px;font-size:12px;margin-top:3px;opacity:.93}
+.band:hover{filter:brightness(1.08) saturate(1.1);transform:translateY(-1px)}
+.row.macro .band{height:22px;line-height:22px;font:700 12px/22px 'Cinzel',serif;letter-spacing:.12em;text-transform:uppercase}
+
+#cv.focus .item:not(.hl){opacity:.14;filter:grayscale(.8)}
+#cv.focus .item.hl{z-index:4}
+.flash{animation:flash 1.6s ease 2}
+@keyframes flash{0%,100%{filter:none}50%{filter:brightness(1.25) drop-shadow(0 0 10px var(--gold))}}
+.anim .item,.anim .band{animation:pop .55s cubic-bezier(.2,1.4,.4,1) both;animation-delay:var(--d)}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}
+
+
+.band.l1{cursor:pointer}
+.band.l1 .info{display:inline-grid;place-items:center;width:16px;height:16px;margin-left:8px;border-radius:50%;background:rgba(255,255,255,.28);font:italic 700 11px/1 'EB Garamond',serif;vertical-align:1px}
+.band.l1 .info:hover{background:rgba(255,255,255,.6);color:var(--ink)}
+.band.l1 .chev{font-style:normal;margin-left:6px;opacity:.8;font-size:11px}
+.band.l1.open{box-shadow:0 0 0 2px var(--gold),inset 0 -3px 0 rgba(0,0,0,.12)}
+.band.kid{height:26px;line-height:26px;font-size:12.5px;z-index:2}
+.mark{position:absolute;height:20px;z-index:2;cursor:pointer;white-space:nowrap;font:700 13px/20px 'Titillium Web';color:var(--ink);transition:transform .15s,opacity .25s,filter .25s}
+.mark::before{content:"";position:absolute;left:-6px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--paper2),0 1px 3px rgba(0,0,0,.3)}
+.mark.ev::before{border-radius:2px;transform:rotate(45deg)}
+.mark.au::before{content:"★";width:auto;height:auto;left:-8px;top:-1px;background:none;box-shadow:none;color:var(--c);font-size:17px;line-height:20px;text-shadow:0 0 2px #fff,0 0 2px #fff}
+.mark span{position:absolute;left:10px;top:0;text-shadow:0 0 3px var(--paper),0 0 3px var(--paper)}
+.mark:hover{transform:translateY(-2px)}
+#cv.focus .mark:not(.hl){opacity:.18}
+#pnav button{border-left:4px solid var(--c,#999)}
+
+
+/* =================== versione mobile: linea del tempo verticale =================== */
+#mob{display:none}
+body.mobile #pnav,body.mobile #stage,body.mobile footer,body.mobile #zin,body.mobile #zout,body.mobile #tip{display:none!important}
+body.mobile #mob{display:block;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body.mobile header{padding:10px 14px 12px;gap:8px 12px}
+body.mobile #logo{width:44px;height:44px}
+body.mobile .titles{min-width:0;flex:1}
+body.mobile .school{font-size:10px;letter-spacing:.1em}
+body.mobile h1{font-size:19px}
+body.mobile .tag{display:none}
+body.mobile .controls{width:100%;flex-wrap:nowrap}
+body.mobile .search{flex:1}
+body.mobile .search input{width:100%;font-size:16px}
+body.mobile #results{right:0}
+body.mobile .controls .btn{padding:6px 10px;font-size:13px;white-space:nowrap}
+
+.m-top{position:sticky;top:0;z-index:5;background:rgba(255,253,248,.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);box-shadow:0 4px 12px -8px rgba(0,0,0,.3)}
+.m-row{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;scrollbar-width:none}
+.m-row::-webkit-scrollbar{display:none}
+.m-row+.m-row{padding-top:0}
+.m-f{flex:none;border:2px solid var(--g);background:var(--g);color:#fff;border-radius:16px;padding:4px 11px;font:600 13px 'Titillium Web'}
+.m-f.off{background:transparent;color:var(--g);opacity:.7}
+.m-c{flex:none;border:0;background:#ece4d2;color:var(--ink);border-radius:12px;padding:3px 10px;font:700 13px 'Cinzel',serif;min-width:44px}
+.m-c.on{background:var(--crimson);color:#fff}
+.m-sec{position:relative;padding:0 14px 6px 40px}
+.m-sec::before{content:"";position:absolute;left:21px;top:0;bottom:0;width:3px;border-radius:2px;background:linear-gradient(var(--line),#cfc3a8)}
+.m-sh{position:sticky;top:var(--mtop,90px);z-index:3;margin:0 -14px 8px -40px;padding:8px 14px 8px 40px;background:linear-gradient(90deg,var(--navy),#24496b);color:#fff;display:flex;align-items:baseline;gap:10px}
+.m-sh b{font:700 18px 'Cinzel',serif;letter-spacing:.04em}
+.m-sh small{font:italic 14px 'EB Garamond',serif;color:#c9d6e3}
+.m-era{position:relative;margin:10px 0;padding:8px 12px;border-radius:10px;background:var(--c);color:#fff;font:700 12px 'Cinzel',serif;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;width:100%;border:0;text-align:left}
+.m-era span{font:600 12px 'Titillium Web';letter-spacing:0;text-transform:none;opacity:.85}
+.mc{position:relative;margin:10px 0;background:var(--paper2);border-radius:12px;box-shadow:0 2px 8px rgba(23,50,77,.12);border-left:6px solid var(--c)}
+.mc::before{content:"";position:absolute;left:-31px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px var(--paper)}
+.mc>summary{list-style:none;cursor:pointer;padding:10px 44px 10px 12px;position:relative;display:block}
+.mc>summary::-webkit-details-marker{display:none}
+.mc>summary::after{content:"▾";position:absolute;right:12px;top:12px;width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--c) 15%,#fff);color:var(--c);display:grid;place-items:center;font-size:13px;transition:transform .25s}
+.mc[open]>summary::after{transform:rotate(180deg)}
+.mc-tag{display:block;font:700 10.5px 'Titillium Web';letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+.mc-t{display:block;font:700 19px/1.15 'Cinzel',serif;color:var(--ink);margin:2px 0}
+.mc-d{font:italic 15px 'EB Garamond',serif;color:var(--muted)}
+.mc-cards{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font:700 13.5px 'Titillium Web';color:var(--ink)}
+.mc-cards i{font-style:normal;color:var(--gold)}
+.mc-b{padding:0 12px 12px;animation:mopen .3s ease}
+@keyframes mopen{from{opacity:0;transform:translateY(-6px)}}
+.mc-info{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--c);color:var(--tc);border-radius:16px;padding:5px 12px;font:600 13px 'Titillium Web';margin:2px 0 10px}
+.mk{margin:8px 0;border-radius:10px;background:color-mix(in srgb,var(--c) 9%,#fffdf8);border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.mk>summary{list-style:none;cursor:pointer;padding:8px 36px 8px 10px;position:relative;font:700 15px 'Titillium Web';color:color-mix(in srgb,var(--c) 75%,#000)}
+.mk>summary::-webkit-details-marker{display:none}
+.mk>summary small{font:600 12px 'Titillium Web';color:var(--muted);margin-left:6px}
+.mk>summary::after{content:"+";position:absolute;right:12px;top:6px;color:var(--c);font-size:18px}
+.mk[open]>summary::after{content:"–"}
+.mk .mlist{padding:0 8px 8px}
+.mk .mk-i{border:0;background:none;padding:0 2px 6px;font:600 13px 'Titillium Web';color:var(--crimson);text-decoration:underline;align-self:flex-start}
+.mlist{display:flex;flex-direction:column;gap:2px}
+.mlh{font:700 11px 'Titillium Web';letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+.mm{display:grid;grid-template-columns:18px 1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;border:0;background:none;text-align:left;padding:7px 4px;border-radius:8px;width:100%;color:var(--ink)}
+.mm:active,.mm:hover{background:#f1e9d8}
+.mm .dot{grid-row:1/3;width:12px;height:12px;border-radius:50%;background:var(--c);justify-self:center}
+.mm.ev .dot{border-radius:2px;transform:rotate(45deg)}
+.mm.big .dot{width:auto;height:auto;background:none;color:var(--gold);font-style:normal;font-size:17px;line-height:1}
+.mm.big .dot::before{content:"★"}
+.mm-n{font:700 15.5px/1.2 'Titillium Web'}
+.mm.big .mm-n{font-size:16.5px}
+.mm-d{font:600 12.5px 'Titillium Web';color:var(--muted);white-space:nowrap}
+.mm-s{grid-column:2/4;font:14px/1.25 'EB Garamond',serif;color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm.flash,.mk.flash{animation:flash 1.6s ease 2}
+.m-foot{padding:24px 18px 40px;text-align:center;font:italic 14px 'EB Garamond',serif;color:var(--muted)}
+body.mobile dialog{width:100vw;max-width:100vw;margin:auto 0 0;max-height:90vh;border-radius:18px 18px 0 0}
+body.mobile dialog[open]{animation:sheet .32s cubic-bezier(.2,1,.3,1)}
+@keyframes sheet{from{transform:translateY(40%);opacity:.4}}
+body.mobile .dh{padding:22px 16px 14px}
+body.mobile .dh::before{content:"";position:absolute;left:50%;top:7px;width:40px;height:4px;margin-left:-20px;border-radius:2px;background:currentColor;opacity:.4}
+body.mobile .db{padding:14px 16px 28px;font-size:17.5px}
+body.mobile .works li{grid-template-columns:54px 1fr}
+
+/* ---------- minimap & footer ---------- */
+footer{flex:none;background:var(--paper2);border-top:1px solid var(--line);padding:6px 14px 8px;display:flex;gap:14px;align-items:center}
+#mm{flex:1;height:38px;display:block;cursor:pointer;border-radius:6px;min-width:0}
+.hint{font:13px 'EB Garamond',serif;color:var(--muted);max-width:330px;line-height:1.25}
+.hint kbd{font:600 11px 'Titillium Web';background:#ebe3d1;border-radius:4px;padding:0 4px}
+
+#tip{position:fixed;pointer-events:none;z-index:60;background:var(--navy);color:#fff;padding:6px 10px;border-radius:8px;font:13px/1.3 'Titillium Web';max-width:300px;opacity:0;transition:opacity .12s;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+#tip b{display:block;font-size:14px}
+#tip em{color:#f0d68a;font-style:normal}
+
+/* ---------- dialog ---------- */
+dialog{border:0;padding:0;border-radius:16px;max-width:min(780px,94vw);width:780px;max-height:88vh;background:var(--paper2);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden}
+dialog[open]{display:flex;flex-direction:column;animation:dlg .3s cubic-bezier(.2,1.2,.4,1)}
+@keyframes dlg{from{opacity:0;transform:translateY(24px) scale(.97)}}
+dialog::backdrop{background:rgba(15,36,56,.55);backdrop-filter:blur(3px)}
+.dh{padding:20px 26px 16px;background:var(--c);color:var(--tc);position:relative;flex:none}
+.dh::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:linear-gradient(90deg,var(--gold),transparent)}
+.kick{font:700 11px 'Titillium Web';letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.dh h2{margin:4px 0 2px;font:700 clamp(22px,3.4vw,32px)/1.1 'Cinzel',serif}
+.dates{font:italic 17px 'EB Garamond',serif;opacity:.95}
+.dsub{margin:8px 0 0;font:600 15px 'Titillium Web';opacity:.95}
+.x{position:absolute;right:14px;top:12px;border:0;background:rgba(255,255,255,.22);color:inherit;width:34px;height:34px;border-radius:50%;font-size:20px;cursor:pointer;line-height:34px}
+.x:hover{background:rgba(255,255,255,.4)}
+.db{padding:18px 26px 24px;overflow:auto;font:18px/1.55 'EB Garamond',serif}
+.db p{margin:0 0 12px}
+.db h3{font:700 12px 'Titillium Web';letter-spacing:.16em;text-transform:uppercase;color:var(--crimson);margin:20px 0 8px;display:flex;align-items:center;gap:8px}
+.db h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.works{list-style:none;padding:0;margin:0}
+.works li{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:5px 0;border-bottom:1px dotted var(--line)}
+.works li b{font:700 14px/1.9 'Titillium Web';color:var(--steel)}
+.works li i{font-weight:600}
+.temi{display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:0;list-style:none}
+.temi li{background:#efe6d3;border-radius:14px;padding:3px 12px;font:15px 'Titillium Web'}
+blockquote{margin:14px 0 4px;padding:12px 18px;border-left:4px solid var(--gold);background:#f5eedf;font-style:italic;font-size:20px;border-radius:0 10px 10px 0}
+blockquote cite{display:block;font:13px 'Titillium Web';font-style:normal;color:var(--muted);margin-top:4px}
+.xref{color:var(--crimson);text-decoration:none;border-bottom:1px dotted;cursor:pointer;font-weight:600}
+.xref:hover{background:#fbe7ea}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:0;border-radius:14px;padding:3px 11px;font:600 14px 'Titillium Web';cursor:pointer;background:var(--c);color:var(--tc)}
+.chips button:hover{filter:brightness(1.1)}
+.show{margin-top:18px;border:0;background:var(--navy);color:#fff;border-radius:20px;padding:8px 16px;font:600 14px 'Titillium Web';cursor:pointer}
+.show:hover{background:var(--steel)}
+
+@media (max-width:700px){
+  :root{--labw:98px}
+  header{padding:8px 12px;gap:10px}
+  #logo{width:46px;height:46px}
+  .tag,.hint{display:none}
+  .search input{width:150px}
+  .rowlab b{font-size:11px}.rowlab small{display:none}
+  .ghead .rowlab b{font-size:12px;letter-spacing:.08em}
+  #status{display:none}
+  .db{padding:14px 16px 20px;font-size:17px}.dh{padding:16px 16px 14px}
+}
+</style>
+</head>
+<body>
+<header>
+  <svg id="logo" viewBox="0 0 120 120" aria-label="Sigillo del Liceo Classico Francesco Vivona"></svg>
+  <div class="titles">
+    <div class="school">Materiale didattico per gli studenti del Liceo Classico Statale <b>«Francesco Vivona»</b> · Roma</div>
+    <h1>Sette secoli di <span>letteratura italiana</span></h1>
+    <div class="tag">Dalla Scuola siciliana alle avanguardie · 1200 – 1920 · storia, Europa, Italia</div>
+  </div>
+  <div class="controls">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><circle cx="10" cy="10" r="7"/><path d="M15 15l6 6"/></svg>
+      <input id="q" type="search" placeholder="Cerca autore, evento…" autocomplete="off">
+      <div id="results"></div>
+    </div>
+    <div class="grp">
+      <button class="btn" id="openall" title="Apri tutti i periodi">Apri tutto</button>
+      <button class="btn" id="closeall" title="Torna alla vista d'insieme">Chiudi tutto</button>
+    </div>
+    <div class="grp">
+      <button class="btn" id="zout" title="Riduci (−)">−</button>
+      <button class="btn" id="zin" title="Ingrandisci (+)">+</button>
+    </div>
+  </div>
+</header>
+<nav id="pnav"><span class="lbl">Vai a</span></nav>
+<div id="stage">
+  <div id="vp"><div id="cv"></div></div>
+  <div id="cursor"></div>
+</div>
+<noscript><div style="padding:24px;font:17px/1.5 Georgia,serif;background:#fff3cd">Questa linea del tempo ha bisogno di JavaScript. Se la stai vedendo in un'anteprima (WhatsApp, Gmail, app File), aprila in Chrome o Safari.</div></noscript>
+<div id="mob"></div>
+<footer>
+  <canvas id="mm"></canvas>
+  <div class="hint">Scorri con due dita sul trackpad (o trascina) · pizzica o <kbd>Ctrl</kbd>+rotella per lo zoom · clic su un periodo per aprirlo, <b>i</b> per la scheda · clic su un nome per la voce<br><small>Materiale didattico, non è una pubblicazione ufficiale dell'istituto.</small></div>
+</footer>
+<div id="tip"></div>
+<dialog id="dlg"><div class="dh" id="dh"></div><div class="db" id="db"></div></dialog>
+
+<script>
+"use strict";
+const MACRO = [
+ {id:"m-med",n:"Basso Medioevo",a:1180,b:1492,c:"#2b4762",t:`<p>Convenzionalmente l'età che va dall'anno Mille alla scoperta dell'America (1492). È l'epoca della rinascita delle città, dei Comuni, dei mercanti e delle università, ma anche del conflitto tra i due poteri universali, Papato e Impero. Nascono in questi secoli le letterature in volgare.</p>`},
+ {id:"m-mod",n:"Età moderna",a:1492,b:1789,c:"#3d6283",t:`<p>Dalle scoperte geografiche alla Rivoluzione francese: nascono gli Stati nazionali e l'assolutismo, l'Europa si divide con la Riforma, la scienza cambia metodo con Galileo e Newton, e il secolo dei Lumi mette in discussione ogni autorità tradizionale.</p>`},
+ {id:"m-con",n:"Età contemporanea",a:1789,b:1925,c:"#5b84a8",t:`<p>Si apre con la Rivoluzione francese: le idee di nazione, libertà e cittadinanza, la rivoluzione industriale e la società di massa ridisegnano il mondo. Per l'Italia è il secolo del Risorgimento e dell'Unità.</p>`}
+];
+
+const EP = [
+ {id:"e-cort",n:"Letteratura cortese e cavalleresca",a:1180,b:1300,main:1,c:"#c8794a",t:`<p>Nella Francia del XII secolo nascono due modelli destinati a tutta l'Europa: la <b>lirica provenzale</b> dei trovatori in lingua d'oc, centrata sull'<i>amor cortese</i> (il poeta come vassallo della donna), e il <b>romanzo cavalleresco</b> in lingua d'oïl, con il ciclo carolingio (la <i>Chanson de Roland</i>) e il ciclo bretone di re Artù (Chrétien de Troyes). La Scuola siciliana nasce imitando i provenzali.</p>`},
+ {id:"e-tard",n:"Autunno del Medioevo",a:1300,b:1450,main:1,c:"#b0864f",t:`<p>Mentre in Italia fioriscono le Tre Corone e il primo Umanesimo, il resto d'Europa vive ancora una cultura gotica e cavalleresca. In Inghilterra Chaucer scrive i <i>Racconti di Canterbury</i>, debitori del <i>Decameron</i>: l'Italia è già il modello letterario del continente.</p>`},
+ {id:"e-rin",n:"Umanesimo e Rinascimento europeo",a:1450,b:1600,main:1,c:"#3aa38a",t:`<p>Grazie alla stampa (Gutenberg, c. 1455) gli ideali umanistici nati in Italia si diffondono in Europa: Erasmo, More, Rabelais, Montaigne. Il petrarchismo diventa il linguaggio lirico europeo; la riscoperta dei classici incontra la crisi religiosa della Riforma.</p>`},
+ {id:"e-bar",n:"Barocco",a:1600,b:1680,main:1,c:"#9b59b6",t:`<p>Gusto per la meraviglia, la metafora ardita, il contrasto, la teatralità. È il secolo d'oro della letteratura spagnola (Cervantes, Lope de Vega, Calderón) e del teatro elisabettiano (Shakespeare). In Italia il suo campione è Marino.</p>`},
+ {id:"e-clfr",n:"Classicismo francese",a:1640,b:1700,c:"#6f7fb3",t:`<p>Sotto Luigi XIV la Francia elabora un ideale di ordine, chiarezza e regola (le unità aristoteliche di tempo, luogo e azione). Grandi tragici come Corneille e Racine, e il genio comico di Molière. Sarà un modello per Metastasio, Goldoni e Alfieri.</p>`},
+ {id:"e-ill",n:"Illuminismo",a:1690,b:1789,main:1,c:"#e2b23a",t:`<p>«Sapere aude!», abbi il coraggio di servirti della tua intelligenza (Kant). La ragione critica ogni pregiudizio; si combatte per la tolleranza, i diritti, la riforma della giustizia. Centri: Parigi (Voltaire, Montesquieu, Rousseau, l'<i>Encyclopédie</i> di Diderot e d'Alembert) e Londra. In Italia: Verri, Beccaria, Parini.</p>`},
+ {id:"e-prer",n:"Preromanticismo",a:1760,b:1798,c:"#c0566b",t:`<p>Nella seconda metà del Settecento affiorano sensibilità nuove: la poesia «sepolcrale» inglese (Young, Gray), i canti di Ossian di Macpherson (1760-65), lo <i>Sturm und Drang</i> tedesco con il <i>Werther</i> di Goethe (1774). Sentimento, notte, natura selvaggia, passione: sono il sottofondo di Alfieri e del giovane Foscolo.</p>`},
+ {id:"e-neo",n:"Neoclassicismo",a:1760,b:1820,c:"#5aa9c9",t:`<p>Teorizzato da Winckelmann («nobile semplicità e quieta grandezza»), propone l'arte greca come bellezza ideale e serena. In Italia ha in Canova lo scultore e in Monti e Foscolo i poeti; convive spesso con la sensibilità preromantica.</p>`},
+ {id:"e-rom",n:"Romanticismo",a:1798,b:1848,main:1,c:"#d64545",t:`<p>Nasce in Germania (i fratelli Schlegel, la rivista «Athenaeum», 1798) e in Inghilterra (<i>Lyrical Ballads</i> di Wordsworth e Coleridge, 1798). Al primato della ragione oppone sentimento, immaginazione, infinito, interesse per la storia, il popolo, le tradizioni nazionali. In Italia arriva nel 1816 con l'articolo di [[stael|Madame de Staël]] e assume un carattere più moderato e civile ([[manzoni|Manzoni]]).</p>`},
+ {id:"e-real",n:"Realismo",a:1830,b:1880,main:1,c:"#8a6d4f",t:`<p>Il romanzo diventa lo specchio della società borghese: Balzac (<i>La commedia umana</i>), Stendhal, Flaubert (<i>Madame Bovary</i>, 1857), Dickens in Inghilterra, Tolstoj e Dostoevskij in Russia. Il narratore osserva e rappresenta il vero, spesso con intento critico.</p>`},
+ {id:"e-nat",n:"Naturalismo",a:1865,b:1895,c:"#6b5a3f",t:`<p>Applica alla letteratura il metodo delle scienze positive (Taine, Darwin): l'uomo è determinato da ereditarietà, ambiente e momento storico. Il manifesto è la prefazione a <i>Germinie Lacerteux</i> dei Goncourt (1865); il maestro è Zola con il ciclo dei <i>Rougon-Macquart</i>. In Italia diventerà [[ip-ver|Verismo]].</p>`},
+ {id:"e-dec",n:"Simbolismo e Decadentismo",a:1857,b:1910,c:"#7b4fa0",t:`<p>Con <i>I fiori del male</i> di Baudelaire (1857) la poesia si fa conoscenza misteriosa: il mondo è una «foresta di simboli» da decifrare per analogie e corrispondenze. Verlaine, Rimbaud, Mallarmé ne sono i maestri; il romanzo estetizzante (Huysmans, Wilde) e la filosofia di Nietzsche alimentano il mito del poeta maledetto o superuomo. In Italia: Pascoli e D'Annunzio.</p>`},
+ {id:"e-avg",n:"Avanguardie e Modernismo",a:1905,b:1925,main:1,c:"#e2552a",t:`<p>Futurismo, Espressionismo, Cubismo, poi Dadaismo: le avanguardie rompono con la tradizione. Il romanzo modernista (Proust, Joyce, Kafka, Woolf) frantuma tempo e coscienza, influenzato dalla psicoanalisi di Freud e dalla filosofia di Bergson. In Italia: Marinetti, Svevo, Pirandello.</p>`}
+];
+
+const IP = [
+ {id:"ip-orig",n:"Le Origini",a:1200,b:1300,main:1,c:"#c86a2b",t:`<p>Il volgare italiano, già usato in documenti pratici (il <i>Placito capuano</i> è del 960), diventa lingua letteraria nel Duecento, in ritardo rispetto alla Francia. Nascono diverse esperienze: la poesia religiosa in Umbria, la lirica d'amore in Sicilia e poi in Toscana, la poesia comico-realistica, la prosa (il <i>Novellino</i>, il <i>Milione</i>). Il secolo culmina nel Dolce Stil Novo.</p>`},
+ {id:"ip-rel",n:"Poesia religiosa",a:1224,b:1306,c:"#a0703c",t:`<p>Legata ai nuovi ordini mendicanti e ai movimenti penitenziali, si esprime in un volgare semplice, destinato al popolo. Dal <i>Cantico di Frate Sole</i> di [[francesco]] (il primo testo poetico d'autore in volgare italiano) alle <i>laude</i> drammatiche di [[jacopone]].</p>`},
+ {id:"ip-sic",n:"Scuola siciliana",a:1230,b:1266,c:"#e8892f",t:`<p>Fiorisce alla corte di [[federico2]] a Palermo: funzionari e notai (come [[lentini]] e [[vigna]]) compongono liriche d'amore in un siciliano «illustre», depurato e nobilitato dal latino e dal provenzale. Temi e figure vengono dall'amor cortese, ma la poesia è separata dalla musica. Invenzione capitale: il <b>sonetto</b>. Finisce con la morte di Manfredi a Benevento (1266). I testi ci sono giunti «toscanizzati» dai copisti.</p>`},
+ {id:"ip-sto",n:"Siculo-toscani",a:1260,b:1295,c:"#d9762b",t:`<p>Dopo la caduta degli Svevi, la lirica siciliana passa nei Comuni toscani, dove si arricchisce di temi politici e morali. Il maggiore esponente è [[guittone]], contro il cui stile difficile reagirà lo Stilnovo.</p>`},
+ {id:"ip-com",n:"Poesia comico-realistica",a:1260,b:1320,c:"#c2185b",t:`<p>Rovescia parodisticamente i temi della lirica «alta»: invece della donna-angelo, osterie, denaro, dadi, litigi, donne sboccate. Ma è una poesia letterariamente raffinatissima, basata sulla retorica medievale dello stile «comico». Il suo campione è [[angiolieri]].</p>`},
+ {id:"ip-stil",n:"Dolce Stil Novo",a:1274,b:1310,c:"#e84393",t:`<p>Il nome viene da Dante (<i>Purgatorio</i> XXIV). Un gruppo ristretto di poeti (Guinizzelli, Cavalcanti, Dante, Cino, Lapo Gianni) canta un amore che coincide con la <b>nobiltà d'animo</b> («cor gentile»), non di sangue. La donna è un tramite verso Dio (<i>donna-angelo</i>), il suo saluto dona salvezza. Lo stile è «dolce»: lessico selezionato, sintassi limpida, musicalità.</p>`},
+ {id:"ip-tre",n:"Il Trecento: le Tre Corone",a:1300,b:1375,main:1,c:"#c0392b",t:`<p>Tre autori fiorentini – <b>Dante, Petrarca, Boccaccio</b> – danno al volgare una dignità e un prestigio che lo renderanno modello per tutta l'Italia, e il fiorentino diventerà la base della lingua letteraria nazionale. Dante chiude il Medioevo con una sintesi universale; Petrarca apre all'Umanesimo con l'indagine interiore e il culto dei classici; Boccaccio fonda la prosa narrativa.</p>`},
+ {id:"ip-uma",n:"Umanesimo",a:1375,b:1494,main:1,c:"#2e86de",t:`<p>Riscoperta e studio filologico dei classici latini e greci (i codici ritrovati nelle biblioteche dei monasteri, l'arrivo dei dotti bizantini). L'uomo è al centro, artefice del proprio destino (Pico, <i>Oratio de hominis dignitate</i>). Nella prima metà del Quattrocento prevale il latino (<b>Umanesimo latino</b>: Salutati, Bruni, Poggio, Valla); dalla seconda metà torna il volgare (<b>Umanesimo volgare</b>) nelle corti: Lorenzo, Poliziano, Pulci a Firenze; Boiardo a Ferrara; Sannazaro a Napoli.</p>`},
+ {id:"ip-rin",n:"Rinascimento",a:1494,b:1545,main:1,c:"#16a085",t:`<p>Il classicismo diventa norma: si imitano i modelli perfetti, Petrarca per la poesia e Boccaccio per la prosa ([[bembo]], <i>Prose della volgar lingua</i>, 1525). È l'età della grande arte (Leonardo, Michelangelo, Raffaello) e di capolavori come il <i>Furioso</i>, il <i>Principe</i>, il <i>Cortegiano</i>, mentre l'Italia perde l'indipendenza politica nelle Guerre d'Italia.</p>`},
+ {id:"ip-ctr",n:"Manierismo e Controriforma",a:1545,b:1600,main:1,c:"#6c5ce7",t:`<p>Il Concilio di Trento (1545-1563) impone un controllo severo sulla cultura: Indice dei libri proibiti, censura, moralizzazione delle arti. L'armonia rinascimentale si incrina in inquietudine e tensione («Manierismo»); la poetica si fa normativa sulla base della <i>Poetica</i> di Aristotele. L'autore simbolo è [[tasso]].</p>`},
+ {id:"ip-bar",n:"Barocco",a:1600,b:1690,main:1,c:"#8e44ad",t:`<p>«È del poeta il fin la meraviglia» ([[marino]]): metafore ardite, concettismo, gusto per il bizzarro e il molteplice. Accanto alla lirica marinista, il Seicento italiano vive la rivoluzione scientifica di [[galileo]], le utopie di [[campanella]], il poema eroicomico di [[tassoni]], la fiaba di [[basile]].</p>`},
+ {id:"ip-arc",n:"Arcadia",a:1690,b:1750,main:1,c:"#27ae60",t:`<p>Accademia fondata a <b>Roma</b> nel 1690 (si riuniva nel Bosco Parrasio, sul Gianicolo) per reagire al «cattivo gusto» barocco: semplicità, chiarezza, razionalità, imitazione dei classici e di Petrarca. I soci assumevano nomi pastorali. Il suo frutto maggiore è il melodramma di [[metastasio]]; nello stesso periodo lavorano due giganti del pensiero, [[vico]] e [[muratori]].</p>`},
+ {id:"ip-ill",n:"Illuminismo",a:1750,b:1796,main:1,c:"#f1c40f",t:`<p>Due capitali: <b>Milano</b>, con l'Accademia dei Pugni e la rivista «Il Caffè» (1764-66) dei fratelli [[verri]] e di [[beccaria]], e <b>Napoli</b> (Genovesi, Galiani, Filangieri). Letteratura «utile», impegnata nelle riforme. Il teatro si rinnova con [[goldoni]], la poesia satirica con [[parini]]; [[alfieri]] apre già alla sensibilità preromantica.</p>`},
+ {id:"ip-neo",n:"Neoclassicismo e Preromanticismo",a:1796,b:1816,main:1,c:"#00a8c6",t:`<p>Negli anni napoleonici convivono l'ideale neoclassico della bellezza serena e la passione preromantica. [[monti]] è il poeta ufficiale e il traduttore dell'<i>Iliade</i>; [[foscolo]] fonde le due tendenze in un'opera che va dall'<i>Ortis</i> ai <i>Sepolcri</i> alle <i>Grazie</i>.</p>`},
+ {id:"ip-prer",n:"Preromanticismo",a:1763,b:1816,c:"#e07a8a",t:`<p>La traduzione dei canti di Ossian di [[cesarotti]] (1763) porta in Italia il gusto per la notte, le brume, la malinconia; la sensibilità tragica e titanica di [[alfieri]] e la tensione del giovane [[foscolo]] (l'<i>Ortis</i>) ne sono le espressioni maggiori.</p>`},
+ {id:"ip-rom",n:"Romanticismo",a:1816,b:1861,main:1,c:"#e74c3c",t:`<p>Nasce dalla polemica aperta nel 1816 dall'articolo di [[stael|Madame de Staël]] che invitava gli Italiani a tradurre i moderni: le risponde la <i>Lettera semiseria</i> di [[berchet]]. La rivista «Il Conciliatore» (1818-19) è soppressa dall'Austria. Il Romanticismo italiano è moderato, cristiano, civile e patriottico: rifiuta la mitologia, cerca il «vero», si rivolge a un pubblico ampio. Il suo capolavoro sono i <i>Promessi sposi</i>. [[leopardi]], pur polemico verso i romantici, è il più grande poeta del secolo.</p>`},
+ {id:"ip-scap",n:"Scapigliatura",a:1860,b:1880,c:"#34495e",t:`<p>A Milano, negli anni dell'Unità, giovani artisti ribelli (il nome viene dal romanzo di Cletto Arrighi, 1862) contestano la morale borghese e il manzonismo. Sentono il «dualismo» tra ideale e reale, amano il macabro, la malattia, l'orrido; guardano a Baudelaire e a Poe. Primo esempio italiano di avanguardia: [[praga]], [[tarchetti]], [[boito]].</p>`},
+ {id:"ip-post",n:"L'Italia unita: Carducci e il Verismo",a:1861,b:1889,main:1,c:"#a0522d",t:`<p>La nuova nazione cerca una letteratura per tutti gli italiani: libri per la scuola e l'infanzia ([[collodi]], [[deamicis]]), la grande storia letteraria di [[desanctis]], il classicismo civile di [[carducci]], il poeta-vate. Dal Naturalismo francese nasce il <b>Verismo</b>, che porta il Sud povero nella letteratura nazionale.</p>`},
+ {id:"ip-ver",n:"Verismo",a:1875,b:1900,c:"#b8653a",t:`<p>Teorizzato da [[capuana]] e realizzato da [[verga]], adatta il Naturalismo alla realtà italiana: non il proletariato urbano di Zola, ma il mondo arcaico e rurale del Sud. Principio fondamentale è l'<b>impersonalità</b>: l'opera deve sembrare «essersi fatta da sé», l'autore si «eclissa» e il narratore regredisce al livello dei personaggi. A differenza di Zola, nessuna fiducia nel progresso.</p>`},
+ {id:"ip-dec",n:"Decadentismo",a:1889,b:1910,main:1,c:"#9b59b6",t:`<p>Crisi del Positivismo e della fiducia nella ragione: la realtà ha un fondo misterioso che solo il poeta-veggente può cogliere attraverso il simbolo, l'analogia, la musica della parola. In Italia ha due volti: la poesia del «fanciullino» di [[pascoli]] e l'estetismo-superomismo di [[dannunzio]]. Nel 1889 escono <i>Il piacere</i> e <i>Mastro-don Gesualdo</i>: un passaggio di consegne.</p>`},
+ {id:"ip-nov",n:"Il primo Novecento",a:1910,b:1925,main:1,c:"#16a2a0",t:`<p>Gli anni delle riviste fiorentine («La Voce», «Lacerba»), delle avanguardie e della crisi dell'io. Il romanzo si rinnova radicalmente con [[svevo]] e [[pirandello]]; la poesia passa dal tono dimesso dei crepuscolari all'esplosione futurista, fino alla parola essenziale di [[ungaretti]] nelle trincee.</p>`},
+ {id:"ip-crep",n:"Crepuscolari",a:1903,b:1916,c:"#8e9aa6",t:`<p>Il nome lo inventa il critico Borgese (1910): una poesia del «crepuscolo», dopo i fasti di Carducci e D'Annunzio. Tono dimesso e ironico, «le buone cose di pessimo gusto», cortili, organetti, malattia, provincia. [[gozzano]] e [[corazzini]] i maggiori.</p>`},
+ {id:"ip-fut",n:"Futurismo",a:1909,b:1925,c:"#ff4d1a",t:`<p>Il <i>Manifesto</i> di [[marinetti]] esce su «Le Figaro» il 20 febbraio 1909: esalta velocità, macchina, guerra «sola igiene del mondo», distruzione dei musei. Il <i>Manifesto tecnico</i> (1912) propone le «parole in libertà»: abolizione della sintassi, della punteggiatura, degli aggettivi. È la prima avanguardia storica europea.</p>`}
+];
+
+/* -------- Storia europea e mondiale -------- */
+const HEV = [
+ {id:"avignone",n:"Papato ad Avignone",a:1309,b:1377,k:"e",t:`<p>Clemente V trasferisce la sede papale ad Avignone, sotto l'influenza del re di Francia: la «cattività avignonese» dura quasi settant'anni. [[petrarca]] la vive da vicino e la condanna come «Babilonia»; Caterina da Siena si batte per il ritorno a Roma.</p>`},
+ {id:"centanni",n:"Guerra dei Cent'anni",a:1337,b:1453,k:"e",t:`<p>Conflitto intermittente tra Francia e Inghilterra per la corona francese; vi brilla Giovanna d'Arco. Alla fine si consolidano le due monarchie nazionali.</p>`},
+ {id:"peste",n:"Peste nera",a:1347,b:1351,k:"e",c:"#5c2b2b",t:`<p>La più grave epidemia della storia europea uccide forse un terzo della popolazione. A Firenze arriva nel 1348: [[boccaccio]] ne fa la cornice del <i>Decameron</i>; vi muore Laura, la donna amata da [[petrarca]].</p>`},
+ {id:"scisma",n:"Scisma d'Occidente",a:1378,b:1417,k:"e",t:`<p>Due, e poi tre, papi contemporanei si contendono la legittimità. Lo scisma si chiude con il Concilio di Costanza.</p>`},
+ {id:"costant",n:"Caduta di Costantinopoli",a:1453,k:"e",t:`<p>I Turchi ottomani di Maometto II conquistano Costantinopoli: finisce l'Impero romano d'Oriente. Molti dotti bizantini si rifugiano in Italia portando codici greci, alimentando l'Umanesimo.</p>`},
+ {id:"stampa",n:"Gutenberg: la stampa",a:1455,k:"e",t:`<p>A Magonza esce la Bibbia stampata a caratteri mobili. In pochi decenni Venezia diventerà la capitale europea della stampa (Aldo Manuzio): i libri si moltiplicano e i testi si fissano in edizioni.</p>`},
+ {id:"america",n:"Scoperta dell'America",a:1492,k:"e",t:`<p>Il 12 ottobre 1492 [[colombo]], al servizio dei re di Spagna, approda nelle Bahamas. La data segna convenzionalmente l'inizio dell'età moderna: il baricentro del mondo si sposta dal Mediterraneo all'Atlantico.</p>`},
+ {id:"lutero",n:"Riforma protestante",a:1517,k:"e",t:`<p>Martin Lutero affigge a Wittenberg le 95 tesi contro le indulgenze. Nasce la Riforma: salvezza per sola fede, libero esame delle Scritture, Bibbia in volgare tedesco. L'unità religiosa dell'Occidente si spezza.</p>`},
+ {id:"carlo5",n:"Carlo V",a:1500,b:1558,k:"p",t:`<p>Imperatore e re di Spagna, regna su un impero «dove non tramonta mai il sole». Rivale di Francesco I di Francia nelle Guerre d'Italia, le sue truppe compiono il Sacco di Roma (1527).</p>`},
+ {id:"copern",n:"Copernico: De revolutionibus",a:1543,k:"e",t:`<p>Niccolò Copernico propone il sistema eliocentrico. È l'atto di nascita della rivoluzione scientifica che [[galileo]] difenderà a caro prezzo.</p>`},
+ {id:"trento",n:"Concilio di Trento",a:1545,b:1563,k:"e",t:`<p>La risposta cattolica alla Riforma: riafferma i dogmi, riorganizza il clero, istituisce i seminari. Seguono l'Indice dei libri proibiti (1559) e il rafforzamento dell'Inquisizione. Condiziona profondamente la cultura italiana: si pensi a [[tasso]], [[bruno]], [[galileo]].</p>`},
+ {id:"trentanni",n:"Guerra dei Trent'anni",a:1618,b:1648,k:"e",t:`<p>Iniziata come guerra di religione nell'Impero, diventa un conflitto europeo. La Pace di Vestfalia (1648) fonda il moderno sistema degli Stati sovrani.</p>`},
+ {id:"luigi14",n:"Luigi XIV, il Re Sole",a:1638,b:1715,k:"p",t:`<p>Simbolo dell'assolutismo («L'État c'est moi», secondo la tradizione). La reggia di Versailles diventa il modello di tutte le corti europee; il suo regno coincide con il classicismo francese.</p>`},
+ {id:"newton",n:"Newton: Principia",a:1687,k:"e",t:`<p>Isaac Newton pubblica i <i>Principi matematici della filosofia naturale</i>: la legge di gravitazione universale spiega con la stessa matematica cielo e terra. È il compimento della rivoluzione avviata da Galileo.</p>`},
+ {id:"encicl",n:"L'Encyclopédie",a:1751,b:1772,k:"e",t:`<p>Diretta da Diderot e d'Alembert, raccoglie in 28 volumi il sapere del tempo, con particolare attenzione alle tecniche e ai mestieri. È il manifesto dell'Illuminismo.</p>`},
+ {id:"industr",n:"Rivoluzione industriale",a:1760,b:1840,k:"e",t:`<p>In Inghilterra la macchina a vapore e la fabbrica cambiano per sempre il lavoro e la società. Nasce il proletariato industriale.</p>`},
+ {id:"usa",n:"Indipendenza americana",a:1776,k:"e",t:`<p>Il 4 luglio 1776 le tredici colonie dichiarano l'indipendenza dalla Gran Bretagna: per la prima volta i principi illuministi (uguaglianza, diritti inalienabili) fondano uno Stato. Alfieri le dedicherà l'ode <i>L'America libera</i>.</p>`},
+ {id:"rivfr",n:"Rivoluzione francese",a:1789,b:1799,k:"e",c:"#8b2a3c",t:`<p>Dalla presa della Bastiglia (14 luglio 1789) alla Dichiarazione dei diritti dell'uomo, alla Repubblica e al Terrore giacobino, fino al colpo di Stato di Napoleone (1799). Abbatte l'Antico regime e diffonde ovunque le idee di libertà, uguaglianza, nazione. Spartiacque dell'età contemporanea.</p>`},
+ {id:"napoleone",n:"Napoleone Bonaparte",a:1769,b:1821,k:"p",big:1,c:"#8b2a3c",t:`<p>Generale della Rivoluzione, poi Primo console e imperatore dei Francesi (1804). Con la Campagna d'Italia (1796-97) ridisegna la penisola; crea il Regno d'Italia (1805). Sconfitto a Lipsia e definitivamente a Waterloo (1815), muore esule a Sant'Elena. Ha segnato la letteratura italiana: [[foscolo]] lo esalta e poi ne vive il «tradimento» di Campoformio; [[manzoni]] alla notizia della morte scrive di getto <i>Il cinque maggio</i>.</p>`},
+ {id:"vienna",n:"Congresso di Vienna",a:1814,b:1815,k:"e",t:`<p>Le potenze vincitrici (Austria, Russia, Prussia, Gran Bretagna) restaurano i sovrani legittimi. L'Austria domina il Lombardo-Veneto e controlla la penisola.</p>`},
+ {id:"q48",n:"Primavera dei popoli",a:1848,k:"e",t:`<p>Ondata rivoluzionaria in tutta Europa, da Parigi a Vienna, da Berlino a Milano (Cinque giornate). Nello stesso anno Marx ed Engels pubblicano il <i>Manifesto del partito comunista</i>.</p>`},
+ {id:"darwin",n:"Darwin: L'origine delle specie",a:1859,k:"e",t:`<p>La teoria dell'evoluzione per selezione naturale rivoluziona la visione dell'uomo. Il darwinismo, applicato alla società, ispira il Naturalismo e il Verismo («lotta per la vita»).</p>`},
+ {id:"germania",n:"Unificazione tedesca",a:1871,k:"e",t:`<p>Dopo la vittoria sulla Francia, Bismarck proclama a Versailles l'Impero tedesco. Nasce una nuova grande potenza al centro dell'Europa.</p>`},
+ {id:"ww1",n:"Prima guerra mondiale",a:1914,b:1918,k:"e",c:"#5c2b2b",t:`<p>La «Grande Guerra» oppone l'Intesa agli Imperi centrali; l'Italia entra nel conflitto il 24 maggio 1915. Prima guerra di massa e industriale: dieci milioni di morti. Dalle trincee nasce la poesia di [[ungaretti]].</p>`},
+ {id:"russia",n:"Rivoluzione russa",a:1917,k:"e",t:`<p>Crolla l'impero zarista; in ottobre i bolscevichi di Lenin prendono il potere. Nasce il primo Stato comunista.</p>`}
+];
+
+/* -------- Storia d'Italia -------- */
+const HIT = [
+ {id:"federico2",n:"Federico II di Svevia",a:1194,b:1250,k:"p",big:1,t:`<p>Re di Sicilia e imperatore, nipote del Barbarossa, detto <i>stupor mundi</i>. La sua corte di Palermo è un crocevia di culture latina, greca, araba ed ebraica: fonda l'Università di Napoli (1224), scrive un trattato sulla falconeria, protegge la <b>[[ip-sic|Scuola siciliana]]</b>, di cui fu anche poeta. In lotta continua con il Papato e i Comuni.</p>`},
+ {id:"vespri",n:"Vespri siciliani",a:1282,k:"e",t:`<p>Rivolta di Palermo contro gli Angioini, che avevano sottratto il Regno agli Svevi. La Sicilia passa agli Aragonesi.</p>`},
+ {id:"marcopolo",n:"Marco Polo",a:1254,b:1324,k:"p",t:`<p>Mercante veneziano, viaggia fino alla Cina di Kublai Khan, dove resta circa diciassette anni. Prigioniero dei Genovesi, detta a Rustichello da Pisa il <i>Milione</i> (1298), in franco-italiano: il più famoso libro di viaggi del Medioevo.</p>`},
+ {id:"bonifacio",n:"Bonifacio VIII",a:1230,b:1303,c0:1,k:"p",t:`<p>Papa dal 1294 (dopo il «gran rifiuto» di Celestino V), indice il primo <b>Giubileo</b> nel 1300 e afferma la supremazia papale (<i>Unam sanctam</i>, 1302). Interviene nelle lotte fiorentine favorendo i Neri: [[dante]] lo considera responsabile del suo esilio e gli prepara un posto all'Inferno tra i simoniaci. Muore dopo l'umiliazione di Anagni.</p>`},
+ {id:"cola",n:"Cola di Rienzo",a:1313,b:1354,k:"p",t:`<p>Notaio romano, sognò di restaurare la grandezza di Roma antica e nel 1347 si fece proclamare «tribuno». [[petrarca]] lo sostenne con entusiasmo. Fu ucciso in una sommossa popolare.</p>`},
+ {id:"cosimo",n:"Cosimo de' Medici",a:1389,b:1464,k:"p",t:`<p>Banchiere, signore di fatto di Firenze dal 1434 senza cariche ufficiali. Mecenate degli umanisti, affida a [[ficino]] la traduzione di Platone e fonda l'Accademia platonica.</p>`},
+ {id:"lodi",n:"Pace di Lodi",a:1454,k:"e",t:`<p>Accordo tra Milano e Venezia, poi esteso agli altri Stati (Lega italica), che garantisce quarant'anni di equilibrio fra i cinque principali Stati della penisola.</p>`},
+ {id:"colombo",n:"Cristoforo Colombo",a:1451,b:1506,k:"p",t:`<p>Navigatore genovese. Convinto di poter raggiungere le Indie navigando verso ovest, ottiene l'appoggio dei Re Cattolici di Spagna e nel 1492 tocca il Nuovo Mondo: vedi [[america]].</p>`},
+ {id:"leonardo",n:"Leonardo da Vinci",a:1452,b:1519,k:"p",t:`<p>Pittore, ingegnere, scienziato: il genio universale del Rinascimento. Si definiva «omo sanza lettere», ma i suoi codici sono anche un capolavoro di prosa scientifica in volgare. Opere: <i>Cenacolo</i>, <i>Gioconda</i>.</p>`},
+ {id:"savonarola",n:"Girolamo Savonarola",a:1452,b:1498,k:"p",t:`<p>Frate domenicano, predicatore apocalittico, guida di fatto la Repubblica fiorentina dopo la cacciata dei Medici (1494); celebri i «roghi delle vanità». Scomunicato, è impiccato e arso in piazza della Signoria. [[machiavelli]] lo definisce «profeta disarmato».</p>`},
+ {id:"carlo8",n:"Discesa di Carlo VIII",a:1494,k:"e",t:`<p>Il re di Francia attraversa l'Italia fino a Napoli quasi senza combattere: crolla l'equilibrio di Lodi e iniziano le Guerre d'Italia. Per Guicciardini è l'inizio delle «calamità d'Italia».</p>`},
+ {id:"borgia",n:"Cesare Borgia",a:1475,b:1507,k:"p",t:`<p>Detto il Valentino, figlio di papa Alessandro VI, tenta di costruirsi uno Stato in Romagna. [[machiavelli]] lo osserva da vicino durante le sue missioni e ne fa nel <i>Principe</i> un modello di principe nuovo.</p>`},
+ {id:"michelangelo",n:"Michelangelo Buonarroti",a:1475,b:1564,k:"p",t:`<p>Scultore, pittore, architetto (il <i>David</i>, la volta della Cappella Sistina, la cupola di San Pietro). Fu anche poeta: le sue <i>Rime</i>, tormentate e petrarchiste, sono tra le più alte del Cinquecento.</p>`},
+ {id:"sacco",n:"Sacco di Roma",a:1527,k:"e",t:`<p>Le truppe imperiali di Carlo V, tra cui i Lanzichenecchi luterani, saccheggiano Roma per mesi. Shock per tutta la cultura italiana ed europea.</p>`},
+ {id:"cateau",n:"Pace di Cateau-Cambrésis",a:1559,k:"e",t:`<p>Chiude le Guerre d'Italia: la Spagna controlla direttamente Milano, Napoli, la Sicilia e la Sardegna. Inizia la preponderanza spagnola.</p>`},
+ {id:"leopoldo",n:"Pietro Leopoldo di Toscana",a:1747,b:1792,k:"p",t:`<p>Granduca di Toscana, sovrano riformatore illuminato. Il 30 novembre 1786 la Toscana è il primo Stato al mondo ad abolire la pena di morte e la tortura, sulla scia di [[beccaria]].</p>`},
+ {id:"campoformio",n:"Trattato di Campoformio",a:1797,k:"e",t:`<p>Napoleone cede all'Austria la Repubblica di Venezia in cambio di altri territori. Per i patrioti italiani è un tradimento: da qui nasce la disperazione di Jacopo Ortis ([[foscolo]]).</p>`},
+ {id:"moti",n:"Moti carbonari",a:1820,b:1821,k:"e",t:`<p>Insurrezioni costituzionali a Napoli e in Piemonte guidate dalla Carboneria, represse dall'Austria. Ne seguono processi: [[pellico]] finisce allo Spielberg. [[manzoni]] scrive <i>Marzo 1821</i>.</p>`},
+ {id:"mazzini",n:"Giuseppe Mazzini",a:1805,b:1872,k:"p",big:1,t:`<p>Patriota genovese, fondatore della Giovine Italia (1831): un'Italia «una, indipendente, libera, repubblicana», raggiunta con l'insurrezione popolare. Pensiero e azione, Dio e popolo. Triumviro della Repubblica Romana (1849). Fu anche critico letterario, attento al valore civile della letteratura.</p>`},
+ {id:"garibaldi",n:"Giuseppe Garibaldi",a:1807,b:1882,k:"p",big:1,t:`<p>L'«eroe dei due mondi». Combatte in Sud America, difende la Repubblica Romana (1849) sul Gianicolo, e nel 1860 con la Spedizione dei Mille conquista il Regno delle Due Sicilie, consegnandolo a Vittorio Emanuele II.</p>`},
+ {id:"cavour",n:"Camillo Benso di Cavour",a:1810,b:1861,k:"p",big:1,t:`<p>Primo ministro del Regno di Sardegna, è la mente diplomatica dell'Unità: modernizza il Piemonte, porta la questione italiana al Congresso di Parigi, si allea con Napoleone III (Plombières, 1858). Muore pochi mesi dopo la proclamazione del Regno d'Italia.</p>`},
+ {id:"ve2",n:"Vittorio Emanuele II",a:1820,b:1878,k:"p",t:`<p>Re di Sardegna dal 1849, primo re d'Italia dal 1861. Mantiene lo Statuto albertino; con lui Roma diventa capitale (1871).</p>`},
+ {id:"q4849",n:"Prima guerra d'indipendenza · Repubblica Romana",a:1848,b:1849,k:"e",t:`<p>Carlo Alberto dichiara guerra all'Austria ma è sconfitto a Custoza e Novara. A Roma la Repubblica di Mazzini, Saffi e Armellini, difesa da Garibaldi e Mameli, cade sotto le truppe francesi (luglio 1849).</p>`},
+ {id:"mille",n:"Spedizione dei Mille",a:1860,k:"e",t:`<p>Da Quarto (Genova) a Marsala: Garibaldi conquista in pochi mesi la Sicilia e il Mezzogiorno. Lo racconterà Giuseppe Cesare Abba. Vi partecipa anche [[nievo]].</p>`},
+ {id:"regno",n:"Proclamazione del Regno d'Italia",a:1861,k:"e",c:"#1e6b52",t:`<p>Il 17 marzo 1861 a Torino il primo Parlamento nazionale proclama Vittorio Emanuele II re d'Italia. Massimo d'Azeglio avrebbe commentato: «Fatta l'Italia, bisogna fare gli italiani».</p>`},
+ {id:"portapia",n:"Breccia di Porta Pia",a:1870,k:"e",t:`<p>Il 20 settembre 1870 i bersaglieri entrano a Roma: finisce il potere temporale dei papi. Roma diventa capitale nel 1871.</p>`},
+ {id:"giolitti",n:"Giovanni Giolitti",a:1842,b:1928,k:"p",t:`<p>Più volte presidente del Consiglio tra il 1892 e il 1921, domina il primo Novecento: dialogo con socialisti e cattolici, decollo industriale, suffragio universale maschile (1912), guerra di Libia. Contrario all'intervento nella Grande Guerra.</p>`},
+ {id:"guerra15",n:"L'Italia entra in guerra",a:1915,k:"e",t:`<p>Dopo il «maggio radioso» degli interventisti (tra loro [[dannunzio]] e [[marinetti]]) e il Patto di Londra, il 24 maggio 1915 l'Italia dichiara guerra all'Austria-Ungheria.</p>`}
+];
+
+/* -------- Autori europei e mondiali -------- */
+const EAU = [
+ {id:"chaucer",n:"Geoffrey Chaucer",a:1343,b:1400,c0:1,per:["e-tard"],t:`<p>Il padre della letteratura inglese. Fu in Italia per missioni diplomatiche e conobbe le opere delle Tre Corone: i <i>Racconti di Canterbury</i>, con la loro cornice di pellegrini che raccontano storie, devono molto al <i>Decameron</i>.</p>`},
+ {id:"erasmo",n:"Erasmo da Rotterdam",a:1466,b:1536,per:["e-rin"],t:`<p>Il principe degli umanisti europei, filologo del Nuovo Testamento greco. L'<i>Elogio della follia</i> (1511) è una satira ironica della società e della Chiesa del suo tempo.</p>`},
+ {id:"more",n:"Thomas More",a:1478,b:1535,per:["e-rin"],t:`<p>Cancelliere d'Inghilterra, giustiziato per essersi opposto allo scisma di Enrico VIII. La sua <i>Utopia</i> (1516) inventa un genere e una parola: sarà un modello per la <i>Città del Sole</i> di [[campanella]].</p>`},
+ {id:"montaigne",n:"Michel de Montaigne",a:1533,b:1592,per:["e-rin"],t:`<p>Negli <i>Essais</i> («saggi», cioè tentativi) inventa la scrittura dell'io che riflette su sé stesso: «sono io stesso la materia del mio libro». Scettico e tollerante nell'età delle guerre di religione.</p>`},
+ {id:"cervantes",n:"Miguel de Cervantes",a:1547,b:1616,per:["e-bar"],big:1,t:`<p>Soldato a Lepanto, schiavo ad Algeri, esattore delle tasse: una vita avventurosa. Il <i>Don Chisciotte</i> (1605-1615), parodia dei romanzi cavallereschi e insieme riflessione sulla follia e sull'ideale, è considerato il primo romanzo moderno. Debitore dei poemi di [[ariosto]].</p>`},
+ {id:"shakespeare",n:"William Shakespeare",a:1564,b:1616,per:["e-bar"],big:1,t:`<p>Il più grande drammaturgo di ogni tempo. Molte sue opere sono ambientate in Italia e tratte da novelle italiane (<i>Romeo e Giulietta</i>, <i>Otello</i>, <i>Il mercante di Venezia</i>). Tragedie: <i>Amleto</i>, <i>Macbeth</i>, <i>Re Lear</i>; commedie: <i>Sogno di una notte di mezza estate</i>.</p>`},
+ {id:"moliere",n:"Molière",a:1622,b:1673,per:["e-clfr"],t:`<p>Attore e autore comico (<i>Tartufo</i>, <i>L'avaro</i>, <i>Il misantropo</i>, <i>Il malato immaginario</i>): smaschera ipocrisie e manie della società. Lavorò accanto ai comici dell'arte italiani ed è il grande modello di [[goldoni]].</p>`},
+ {id:"voltaire",n:"Voltaire",a:1694,b:1778,per:["e-ill"],big:1,t:`<p>François-Marie Arouet, il filosofo-simbolo dell'Illuminismo: battaglie per la tolleranza (<i>Trattato sulla tolleranza</i>, 1763), contro il fanatismo («Écrasez l'infâme!»). Il racconto <i>Candido</i> (1759) irride l'ottimismo filosofico.</p>`},
+ {id:"rousseau",n:"Jean-Jacques Rousseau",a:1712,b:1778,per:["e-ill"],t:`<p>Ginevrino: l'uomo nasce buono e la società lo corrompe. <i>Il contratto sociale</i> (1762) fonda la sovranità popolare, l'<i>Emilio</i> rivoluziona la pedagogia, <i>La nuova Eloisa</i> anticipa la sensibilità romantica.</p>`},
+ {id:"goethe",n:"Johann Wolfgang Goethe",a:1749,b:1832,per:["e-prer","e-rom"],big:1,t:`<p>Il gigante della letteratura tedesca. <i>I dolori del giovane Werther</i> (1774), romanzo epistolare dello <i>Sturm und Drang</i>, è il modello dell'<i>Ortis</i> di [[foscolo]]. Il <i>Viaggio in Italia</i> racconta il suo amore per la classicità; il <i>Faust</i> è l'opera di tutta una vita.</p>`},
+ {id:"stael",n:"Madame de Staël",a:1766,b:1817,per:["e-rom"],t:`<p>Scrittrice franco-svizzera, oppositrice di Napoleone. Nel gennaio 1816 pubblica sulla «Biblioteca italiana» l'articolo <i>Sulla maniera e la utilità delle traduzioni</i>, che invita gli Italiani a uscire dall'imitazione dei classici e a tradurre i moderni: è la scintilla della polemica tra classicisti e romantici in Italia (vedi [[berchet]]).</p>`},
+ {id:"scott",n:"Walter Scott",a:1771,b:1832,per:["e-rom"],t:`<p>Scozzese, inventore del romanzo storico (<i>Ivanhoe</i>, 1819): l'invenzione romanzesca si innesta su un'accurata ricostruzione d'epoca. Il modello da cui parte [[manzoni]], che però ne critica la libertà nel trattare il vero.</p>`},
+ {id:"byron",n:"George Gordon Byron",a:1788,b:1824,per:["e-rom"],t:`<p>Lord Byron, il poeta-eroe del Romanticismo inglese: ribelle, scandaloso, esule. Vive a lungo in Italia (Venezia, Ravenna, Pisa) e muore in Grecia combattendo per l'indipendenza. Il suo «eroe byroniano» affascinerà generazioni.</p>`},
+ {id:"balzac",n:"Honoré de Balzac",a:1799,b:1850,per:["e-real"],t:`<p>Nella <i>Commedia umana</i> (oltre 90 opere, da <i>Papà Goriot</i> a <i>Eugénie Grandet</i>) ritrae l'intera società francese della Restaurazione, dominata dal denaro: è il padre del romanzo realista.</p>`},
+ {id:"hugo",n:"Victor Hugo",a:1802,b:1885,per:["e-rom"],t:`<p>Capofila del Romanticismo francese (prefazione al <i>Cromwell</i>, 1827). Romanzi: <i>Notre-Dame de Paris</i> (1831), <i>I miserabili</i> (1862). Esule per vent'anni sotto Napoleone III.</p>`},
+ {id:"dickens",n:"Charles Dickens",a:1812,b:1870,per:["e-real"],t:`<p>Il romanziere dell'Inghilterra vittoriana e industriale: <i>Oliver Twist</i>, <i>David Copperfield</i>, <i>Tempi difficili</i>. Denuncia lo sfruttamento dei più deboli, specie dei bambini.</p>`},
+ {id:"baudelaire",n:"Charles Baudelaire",a:1821,b:1867,per:["e-dec"],big:1,t:`<p><i>I fiori del male</i> (1857), processati per oscenità, aprono la poesia moderna: lo <i>spleen</i>, la città, la «perdita dell'aureola» del poeta, le <i>Corrispondenze</i> tra sensi e mondo spirituale. Maestro di Simbolisti, Scapigliati e Decadenti.</p>`},
+ {id:"flaubert",n:"Gustave Flaubert",a:1821,b:1880,per:["e-real"],t:`<p><i>Madame Bovary</i> (1857): la storia di Emma, che si rovina inseguendo i sogni dei romanzi, è raccontata con un'impersonalità e una precisione stilistica nuove. Modello del Naturalismo e del Verismo.</p>`},
+ {id:"dostoevskij",n:"Fëdor Dostoevskij",a:1821,b:1881,per:["e-real"],t:`<p>Romanziere russo della coscienza tormentata: <i>Delitto e castigo</i>, <i>L'idiota</i>, <i>I fratelli Karamazov</i>. Il male, la colpa, la fede, la libertà.</p>`},
+ {id:"tolstoj",n:"Lev Tolstoj",a:1828,b:1910,per:["e-real"],t:`<p>Autore di <i>Guerra e pace</i> (1869), affresco della Russia ai tempi di Napoleone, e di <i>Anna Karenina</i> (1877). Negli ultimi anni predica un cristianesimo radicale e non violento.</p>`},
+ {id:"zola",n:"Émile Zola",a:1840,b:1902,per:["e-nat"],big:1,t:`<p>Il caposcuola del Naturalismo (<i>Il romanzo sperimentale</i>, 1880). Il ciclo dei <i>Rougon-Macquart</i> (20 romanzi, tra cui <i>L'Assommoir</i> e <i>Germinale</i>) studia «scientificamente» una famiglia sotto il peso dell'ereditarietà e dell'ambiente. Celebre il suo <i>J'accuse</i> nell'affare Dreyfus.</p>`},
+ {id:"nietzsche",n:"Friedrich Nietzsche",a:1844,b:1900,per:["e-dec"],t:`<p>Filosofo tedesco: la «morte di Dio», la volontà di potenza, l'<i>Übermensch</i> (oltreuomo, superuomo) di <i>Così parlò Zarathustra</i>. La sua lettura, spesso deformata, è alla base del superomismo di [[dannunzio]].</p>`},
+ {id:"wilde",n:"Oscar Wilde",a:1854,b:1900,per:["e-dec"],t:`<p>Dandy irlandese, campione dell'estetismo: <i>Il ritratto di Dorian Gray</i> (1890), commedie brillanti come <i>L'importanza di chiamarsi Ernesto</i>. Condannato per omosessualità, muore povero a Parigi.</p>`},
+ {id:"freud",n:"Sigmund Freud",a:1856,b:1939,per:["e-avg"],t:`<p>Neurologo viennese, fondatore della psicoanalisi (<i>L'interpretazione dei sogni</i>, 1899): l'inconscio, la rimozione, il complesso di Edipo. Influenza enorme sulla letteratura del Novecento, a cominciare da [[svevo]].</p>`},
+ {id:"proust",n:"Marcel Proust",a:1871,b:1922,per:["e-avg"],t:`<p><i>Alla ricerca del tempo perduto</i> (1913-1927): sette volumi sulla memoria involontaria (la celebre <i>madeleine</i>) e sul tempo vissuto della coscienza.</p>`},
+ {id:"joyce",n:"James Joyce",a:1882,b:1941,per:["e-avg"],t:`<p>Irlandese, visse a lungo a Trieste, dove fu insegnante d'inglese e amico di [[svevo]]. <i>Gente di Dublino</i> (1914) e l'<i>Ulisse</i> (1922), una giornata di Leopold Bloom raccontata con la tecnica del flusso di coscienza.</p>`},
+];
+
+/* -------- Autori italiani -------- */
+const IAU = [
+ /* ---- Origini ---- */
+ {id:"francesco",n:"Francesco d'Assisi",a:1182,b:1226,c0:1,per:["ip-rel"],d:"Assisi 1181/82 – Assisi 1226",sub:"Santo, fondatore dei Frati minori; autore del primo testo poetico in volgare italiano",
+  t:`<p>Figlio di un ricco mercante, rinuncia ai beni paterni e sceglie la povertà radicale. Fonda l'Ordine dei Frati minori (regola approvata nel 1223) e diventa uno dei grandi riformatori della spiritualità medievale. È canonizzato già nel 1228.</p><p>Il <b>Cantico di Frate Sole</b> (o <i>delle creature</i>), composto fra il 1224 e il 1226 in volgare umbro, è una lode a Dio attraverso le creature (sole, luna, acqua, fuoco, «sora nostra morte corporale»): prosa ritmica con assonanze, vicina ai Salmi.</p>`,
+  w:[["1224-26","Cantico di Frate Sole","lauda in volgare umbro"]],x:["lode del creato","povertà","fratellanza universale"],q:["Laudato sie, mi' Signore, cum tucte le tue creature","Cantico di Frate Sole"]},
+ {id:"jacopone",n:"Jacopone da Todi",a:1233,b:1306,c0:1,per:["ip-rel"],d:"Todi c. 1230/36 – Collazzone 1306",sub:"Il maggior autore di laude",
+  t:`<p>Notaio benestante, dopo la morte della moglie si converte e diventa frate francescano «spirituale», sostenitore della povertà rigorosa. Si scontra con papa [[bonifacio]], che lo scomunica e lo imprigiona. Le sue <b>laude</b> sono violente, espressionistiche, piene di disprezzo del mondo; <i>Donna de Paradiso</i>, dialogo drammatico sulla Passione, è un'anticipazione del teatro sacro.</p>`,
+  w:[["fine '200","Laude","tra cui Donna de Paradiso"]],x:["contemptus mundi","lauda drammatica","Passione"]},
+ {id:"vigna",n:"Pier della Vigna",a:1190,b:1249,c0:1,per:["ip-sic"],d:"Capua c. 1190 – San Miniato 1249",sub:"Logoteta di Federico II, poeta siciliano",
+  t:`<p>Il più potente funzionario della corte di [[federico2]], maestro dello stile epistolare latino. Accusato di tradimento, viene accecato e si uccide. Dante lo incontra tra i suicidi (<i>Inferno</i> XIII): «Io son colui che tenni ambo le chiavi / del cor di Federigo».</p>`},
+ {id:"lentini",n:"Giacomo da Lentini",a:1210,b:1260,c0:1,c1:1,per:["ip-sic"],d:"Lentini c. 1210 – c. 1260",sub:"Il Notaro, caposcuola dei Siciliani, inventore del sonetto",
+  t:`<p>Notaio alla corte di [[federico2]], è il caposcuola della Scuola siciliana; Dante lo chiama «'l Notaro». A lui si attribuisce l'invenzione del <b>sonetto</b> (14 versi: due quartine e due terzine), probabilmente da una stanza di canzone. Celebri <i>Io m'aggio posto in core a Dio servire</i> e <i>Amor è un desio che ven da core</i>, in cui l'amore nasce dagli occhi.</p>`,
+  w:[["c. 1230-40","Rime","canzoni e sonetti"]],x:["amor cortese","sonetto","amore e visione"]},
+ {id:"guittone",n:"Guittone d'Arezzo",a:1235,b:1294,c0:1,per:["ip-sto"],d:"Arezzo c. 1235 – Bologna 1294",sub:"Il maggiore dei siculo-toscani",
+  t:`<p>Porta la lirica siciliana in Toscana, aggiungendovi temi politici e morali (la canzone per la sconfitta fiorentina di Montaperti). Dopo la conversione entra nell'ordine dei Frati Gaudenti. Lo stile è difficile, «chiuso», artificioso: gli stilnovisti lo prenderanno a bersaglio.</p>`},
+ {id:"guinizzelli",n:"Guido Guinizzelli",a:1235,b:1276,c0:1,per:["ip-stil"],d:"Bologna c. 1235 – Monselice 1276",sub:"Il padre dello Stilnovo",
+  t:`<p>Giudice bolognese di parte ghibellina, muore in esilio. Dante lo chiama «il padre / mio e de li altri miei miglior» (<i>Purgatorio</i> XXVI). La canzone <b>Al cor gentil rempaira sempre amore</b> è il manifesto dello Stilnovo: amore e cuore nobile sono la stessa cosa, la nobiltà è virtù e non sangue; la donna è paragonata a un angelo. Celebre anche il sonetto <i>Io voglio del ver la mia donna laudare</i>.</p>`,
+  w:[["c. 1270","Al cor gentil rempaira sempre amore","canzone-manifesto"]],x:["cor gentile","donna-angelo","nobiltà d'animo"],q:["Al cor gentil rempaira sempre amore","Al cor gentil, v. 1"]},
+ {id:"cavalcanti",n:"Guido Cavalcanti",a:1258,b:1300,c0:1,per:["ip-stil"],d:"Firenze c. 1258 – Firenze 1300",sub:"Il «primo amico» di Dante",
+  t:`<p>Aristocratico fiorentino, filosofo dalla fama di miscredente (Boccaccio lo ritrae in una novella del <i>Decameron</i>, VI 9). Guelfo bianco, è esiliato nel 1300 proprio da Dante, allora priore, e muore poco dopo di malaria. Nella sua poesia l'amore è una <b>passione distruttiva</b> che sconvolge le facoltà dell'anima, rappresentate come «spiriti» e «spiritelli»: un'esperienza dolorosa e sbigottita. Nella canzone dottrinale <i>Donna me prega</i> definisce filosoficamente l'amore.</p>`,
+  w:[["fine '200","Rime","tra cui Chi è questa che vèn, Voi che per li occhi mi passaste 'l core, Perch'i' no spero di tornar giammai"]],x:["amore-angoscia","spiriti","filosofia averroista"],q:["Chi è questa che vèn, ch'ogn'om la mira","Rime IV"]},
+ {id:"cino",n:"Cino da Pistoia",a:1270,b:1336,c0:1,per:["ip-stil"],d:"Pistoia c. 1270 – Pistoia 1336/37",sub:"Giurista e stilnovista, ponte verso Petrarca",
+  t:`<p>Grande giurista, amico di Dante, è l'ultimo degli stilnovisti. Nella sua poesia l'amore si fa più malinconico e psicologico: per questo è considerato un tramite verso [[petrarca]].</p>`},
+ {id:"angiolieri",n:"Cecco Angiolieri",a:1260,b:1312,c0:1,c1:1,per:["ip-com"],d:"Siena c. 1260 – c. 1312",sub:"Il poeta «maledetto» del Duecento",
+  t:`<p>Senese irrequieto, più volte multato. Nei suoi sonetti canta la «donna, la taverna e 'l dado», l'odio per il padre avaro, la povertà, l'amore per la popolana Becchina: una caricatura della donna-angelo. Ma il ribellismo è anche un sapiente gioco letterario.</p>`,
+  q:["S'i' fosse foco, arderei 'l mondo","Rime"]},
+
+ /* ---- Trecento ---- */
+ {id:"dante",n:"Dante Alighieri",a:1265,b:1321,big:1,per:["ip-stil","ip-tre"],d:"Firenze 1265 – Ravenna 1321",sub:"Il «sommo poeta», padre della lingua italiana",
+  t:`<p>Nasce a Firenze da una famiglia guelfa della piccola nobiltà. Giovanissimo incontra <b>Beatrice</b> (forse Bice Portinari), che morirà nel 1290: attorno a lei costruisce la <i>Vita nova</i>, racconto in prosa e versi dell'amore stilnovistico. Dopo la morte di Beatrice si dedica alla filosofia e alla teologia.</p><p>Entra in politica tra i <b>guelfi bianchi</b>, ed è <b>priore</b> nell'estate del 1300. Nel 1302, mentre è ambasciatore presso [[bonifacio]], i Neri prendono il potere: Dante è condannato all'<b>esilio</b> e, poi, a morte. Non tornerà più a Firenze. Vaga tra le corti (Verona presso Cangrande della Scala, la Lunigiana dei Malaspina), spera nella discesa dell'imperatore Arrigo VII, e chiude la vita a Ravenna presso Guido Novello da Polenta.</p><p>La <b>Commedia</b> (detta «divina» da Boccaccio) è il racconto del viaggio di Dante, guidato da Virgilio e poi da Beatrice, attraverso Inferno, Purgatorio e Paradiso nella settimana santa del 1300: un'opera allegorica e insieme concretissima, dove convivono teologia, politica, scienza e passione personale, in tutti i registri linguistici (il «plurilinguismo» di Dante). 100 canti in terzine incatenate.</p>`,
+  w:[["1292-95","Vita nova","prosimetro: la storia dell'amore per Beatrice"],["1290-1308","Rime","dalle stilnovistiche alle «petrose»"],["1303-05","De vulgari eloquentia","trattato latino sul volgare illustre (incompiuto)"],["1304-07","Convivio","enciclopedia filosofica in volgare (incompiuta)"],["c. 1312-18","Monarchia","teoria dei «due soli»: Papa e Imperatore indipendenti"],["c. 1304-21","Commedia","Inferno, Purgatorio, Paradiso"]],
+  x:["amore stilnovistico","Beatrice come guida","allegoria e figura","esilio e giustizia","Papato e Impero","plurilinguismo","viaggio di salvezza"],
+  q:["Nel mezzo del cammin di nostra vita / mi ritrovai per una selva oscura","Inferno I, 1-2"],rel:["cavalcanti","guinizzelli","petrarca","boccaccio","bonifacio"]},
+ {id:"petrarca",n:"Francesco Petrarca",a:1304,b:1374,big:1,per:["ip-uma","ip-tre"],d:"Arezzo 1304 – Arquà 1374",sub:"Il poeta dell'interiorità e il padre dell'Umanesimo",
+  t:`<p>Figlio di un notaio fiorentino esiliato (bianco, come Dante), cresce ad <b>Avignone</b>, dove la famiglia segue la corte papale. Studia legge a Montpellier e Bologna senza passione; prende gli ordini minori, che gli garantiscono benefici ecclesiastici e libertà di studio. Il 6 aprile 1327, nella chiesa di Santa Chiara, vede per la prima volta <b>Laura</b>, che morirà di peste nel 1348.</p><p>È un instancabile scopritore di classici (l'orazione <i>Pro Archia</i> di Cicerone, le <i>Epistole ad Attico</i>) e un vero filologo: per questo è considerato il primo umanista. Nel <b>1341</b> è incoronato poeta in <b>Campidoglio</b>, a Roma. Vive tra Valchiusa, Parma, Milano (presso i Visconti), Venezia e Padova, e si ritira infine ad Arquà, sui colli Euganei.</p><p>Il <b>Canzoniere</b> (<i>Rerum vulgarium fragmenta</i>) raccoglie 366 componimenti ordinati con cura: la storia di un amore e di un <b>dissidio interiore</b> tra desiderio terreno e aspirazione a Dio, tra passato e presente. La lingua è selezionata, «monolinguistica», di perfetta musicalità: diventerà il modello di tutta la lirica europea (il <b>petrarchismo</b>).</p>`,
+  w:[["1336","Ascesa al monte Ventoso","lettera (Familiares IV 1), allegoria del cammino interiore"],["1338-74","Africa","poema latino su Scipione"],["1347-53","Secretum","dialogo con sant'Agostino sui propri peccati"],["1350-74","Familiares e Seniles","raccolte di lettere latine"],["1352-74","Trionfi","poema allegorico in terzine"],["1336-74","Canzoniere","366 componimenti in volgare"]],
+  x:["dissidio interiore","Laura","tempo e fugacità","accidia","monolinguismo","culto dei classici","petrarchismo"],
+  q:["Voi ch'ascoltate in rime sparse il suono / di quei sospiri ond'io nudriva 'l core","Canzoniere 1, 1-2"],rel:["dante","boccaccio","cola","avignone","bembo"]},
+ {id:"boccaccio",n:"Giovanni Boccaccio",a:1313,b:1375,big:1,per:["ip-tre"],d:"Certaldo o Firenze 1313 – Certaldo 1375",sub:"Il padre della prosa narrativa italiana",
+  t:`<p>Figlio illegittimo di un mercante legato alla compagnia dei Bardi, a quattordici anni è mandato a <b>Napoli</b> per impratichirsi negli affari. Vi frequenta la raffinata corte angioina e scrive le opere giovanili (<i>Filostrato</i>, <i>Filocolo</i>, <i>Teseida</i>). Tornato a Firenze nel 1340 per il fallimento dei Bardi, sperimenta nuove forme (<i>Elegia di Madonna Fiammetta</i>, <i>Ninfale fiesolano</i>).</p><p>Dopo la peste del 1348 compone il <b>Decameron</b> (1349-53): dieci giovani (sette donne e tre uomini) fuggono dalla città appestata e per dieci giorni raccontano a turno novelle, per un totale di cento, dentro una <b>cornice</b>. Vi si rispecchia la società mercantile: le forze che muovono il mondo sono la <b>Fortuna</b>, l'<b>Amore</b> e l'<b>Ingegno</b>. Per il suo stile, il Decameron diventa il modello della prosa italiana.</p><p>Dal 1350 è amico e discepolo di [[petrarca]]; si dedica agli studi umanistici e al culto di Dante: scrive il <i>Trattatello in laude di Dante</i> e nel 1373 tiene a Firenze le prime letture pubbliche della <i>Commedia</i>.</p>`,
+  w:[["1335-40","Filostrato, Filocolo, Teseida","opere del periodo napoletano"],["1343-44","Elegia di Madonna Fiammetta","«romanzo» psicologico al femminile"],["1349-53","Decameron","100 novelle in una cornice"],["1351-72","Trattatello in laude di Dante","biografia di Dante"],["dal 1360","Genealogie deorum gentilium","enciclopedia latina della mitologia"]],
+  x:["Fortuna, Amore, Ingegno","cornice","società mercantile","realismo","novella","culto di Dante"],
+  q:["Umana cosa è aver compassione degli afflitti","Decameron, Proemio"],rel:["peste","dante","petrarca","chaucer"]},
+ {id:"caterina",n:"Caterina da Siena",a:1347,b:1380,per:["ip-tre"],d:"Siena 1347 – Roma 1380",sub:"Mistica, patrona d'Italia",
+  t:`<p>Terziaria domenicana analfabeta (impara a scrivere tardi), detta centinaia di <b>lettere</b> a papi, sovrani e gente comune, con un volgare ardente e appassionato. Si batte per il ritorno del Papa da Avignone a Roma. Muore a Roma; è sepolta in Santa Maria sopra Minerva.</p>`},
+
+ /* ---- Umanesimo ---- */
+ {id:"salutati",n:"Coluccio Salutati",a:1331,b:1406,per:["ip-umlat"],d:"Stignano 1331 – Firenze 1406",sub:"Cancelliere di Firenze, maestro degli umanisti",
+  t:`<p>Cancelliere della Repubblica fiorentina per trent'anni, fa delle lettere pubbliche uno strumento di propaganda «civile» e invita a Firenze il dotto bizantino Manuele Crisolora (1397) per insegnare il greco. È il padre dell'<b>Umanesimo civile</b>.</p>`},
+ {id:"bruni",n:"Leonardo Bruni",a:1370,b:1444,c0:1,per:["ip-umlat"],d:"Arezzo c. 1370 – Firenze 1444",sub:"Storico e traduttore",
+  t:`<p>Allievo di Salutati e anch'egli cancelliere, traduce Platone e Aristotele dal greco e scrive le <i>Historiae Florentini populi</i>. Nella <i>Laudatio florentinae urbis</i> celebra Firenze erede della libertà repubblicana di Roma.</p>`},
+ {id:"poggio",n:"Poggio Bracciolini",a:1380,b:1459,per:["ip-umlat"],d:"Terranova 1380 – Firenze 1459",sub:"Il «cacciatore» di codici",
+  t:`<p>Segretario apostolico, durante il Concilio di Costanza esplora le biblioteche monastiche e ritrova testi capitali come il <i>De rerum natura</i> di Lucrezio e l'<i>Institutio oratoria</i> di Quintiliano. Autore delle <i>Facetiae</i>, raccolta di motti arguti.</p>`},
+ {id:"alberti",n:"Leon Battista Alberti",a:1404,b:1472,per:["ip-umlat"],d:"Genova 1404 – Roma 1472",sub:"Architetto, teorico, scrittore: l'uomo universale",
+  t:`<p>Architetto (facciata di Santa Maria Novella, Tempio Malatestiano), teorico dell'arte (<i>De pictura</i>), difende il volgare organizzando a Firenze il «Certame coronario» (1441). Nei <i>Libri della famiglia</i>, in volgare, discute di educazione ed economia domestica: la virtù dell'uomo contro la Fortuna.</p>`},
+ {id:"valla",n:"Lorenzo Valla",a:1407,b:1457,per:["ip-umlat"],d:"Roma 1407 – Roma 1457",sub:"Il filologo che smascherò un falso",
+  t:`<p>Romano, il filologo più acuto del secolo. Con il <i>De falso credita et ementita Constantini donatione</i> (1440) dimostra, attraverso l'analisi della lingua, che la «Donazione di Costantino», base del potere temporale dei papi, è un falso medievale. Le <i>Elegantiae linguae latinae</i> fissano il modello del latino classico.</p>`},
+ {id:"pulci",n:"Luigi Pulci",a:1432,b:1484,per:["ip-umvol"],d:"Firenze 1432 – Padova 1484",sub:"Il poeta comico della corte medicea",
+  t:`<p>Nel <b>Morgante</b> (1478-83) riprende i cantari cavallereschi popolari con un tono comico, grottesco, espressionistico: il gigante Morgante e il mezzo gigante Margutte, il «ghiottone» che crede solo nella buona cucina. Cadde in disgrazia presso i Medici per le sue posizioni religiose eterodosse.</p>`},
+ {id:"ficino",n:"Marsilio Ficino",a:1433,b:1499,per:["ip-uma"],d:"Figline 1433 – Careggi 1499",sub:"Il filosofo del neoplatonismo fiorentino",
+  t:`<p>Su incarico di [[cosimo]] traduce in latino tutto Platone e il <i>Corpus Hermeticum</i>, e guida l'Accademia platonica di Careggi. Concilia platonismo e cristianesimo: l'uomo è «copula mundi», centro dell'universo, e l'amore è la via che lo eleva al divino.</p>`},
+ {id:"boiardo",n:"Matteo Maria Boiardo",a:1441,b:1494,per:["ip-umvol"],d:"Scandiano 1441 – Reggio Emilia 1494",sub:"Il poeta della corte estense",
+  t:`<p>Conte di Scandiano, al servizio degli Este di Ferrara. L'<b>Orlando innamorato</b> (interrotto nel 1494 dalla discesa di Carlo VIII) fonde il ciclo carolingio e quello bretone: Orlando, paladino di Carlo Magno, è per la prima volta innamorato, di Angelica. [[ariosto]] ne scriverà la continuazione. Autore anche di un raffinato canzoniere, gli <i>Amorum libri</i>.</p>`},
+ {id:"lorenzo",n:"Lorenzo de' Medici",a:1449,b:1492,per:["ip-umvol"],big:0,d:"Firenze 1449 – Careggi 1492",sub:"Il Magnifico: signore di Firenze e poeta",
+  t:`<p>Signore di fatto di Firenze dal 1469, sopravvive alla congiura dei Pazzi (1478) e diventa «l'ago della bilancia» dell'equilibrio italiano. Mecenate di artisti e filosofi, è egli stesso poeta raffinato e versatile: rime petrarchesche, poesia rusticale (<i>Nencia da Barberino</i>), canti carnascialeschi. Il più celebre è il <i>Trionfo di Bacco e Arianna</i>, con il suo invito a cogliere l'attimo.</p>`,
+  q:["Quant'è bella giovinezza, / che si fugge tuttavia!","Trionfo di Bacco e Arianna"]},
+ {id:"poliziano",n:"Angelo Poliziano",a:1454,b:1494,per:["ip-umvol"],d:"Montepulciano 1454 – Firenze 1494",sub:"Il più grande poeta dell'Umanesimo",
+  t:`<p>Agnolo Ambrogini, protetto di Lorenzo, precettore dei suoi figli, filologo geniale (i <i>Miscellanea</i>) e professore allo Studio fiorentino. Poeta in latino, greco e volgare. Le <b>Stanze per la giostra</b> (interrotte nel 1478, dopo la congiura dei Pazzi) celebrano Giuliano de' Medici e Simonetta in ottave di bellezza luminosa, che ricordano la <i>Primavera</i> di Botticelli. La <i>Fabula di Orfeo</i> è il primo testo teatrale profano in volgare.</p>`,
+  w:[["1475-78","Stanze per la giostra","ottave incompiute"],["c. 1480","Fabula di Orfeo","dramma mitologico"],["1489","Miscellanea","filologia"]],x:["bellezza e fugacità","mito classico","filologia"]},
+ {id:"sannazaro",n:"Jacopo Sannazaro",a:1457,b:1530,per:["ip-umvol","ip-rin"],d:"Napoli 1457 – Napoli 1530",sub:"L'umanista della corte aragonese",
+  t:`<p>Nella corte aragonese di Napoli, compone l'<b>Arcadia</b> (1504), prosimetro pastorale in cui il protagonista Sincero si rifugia in un mondo di pastori: un modello europeo per il genere bucolico (e il nome dell'[[ip-arc|Arcadia]] secentesca).</p>`},
+ {id:"pico",n:"Giovanni Pico della Mirandola",a:1463,b:1494,per:["ip-uma"],d:"Mirandola 1463 – Firenze 1494",sub:"Il filosofo della dignità dell'uomo",
+  t:`<p>Prodigio di erudizione, vuole conciliare tutte le filosofie e religioni. Nell'<i>Oratio de hominis dignitate</i> (1486) l'uomo è l'unica creatura senza natura fissa, libera di plasmare sé stessa: può degenerare al livello dei bruti o elevarsi fino a Dio. Il manifesto dell'Umanesimo.</p>`},
+
+ /* ---- Rinascimento ---- */
+ {id:"machiavelli",n:"Niccolò Machiavelli",a:1469,b:1527,big:1,per:["ip-rin"],d:"Firenze 1469 – Firenze 1527",sub:"Il fondatore della scienza politica moderna",
+  t:`<p>Dopo la caduta di [[savonarola]] (1498) diventa segretario della Seconda Cancelleria della Repubblica fiorentina: compie missioni diplomatiche in Francia, in Germania, presso [[borgia|Cesare Borgia]] e il papa, e organizza una milizia cittadina. Nel 1512 i Medici tornano a Firenze: Machiavelli perde l'incarico, è sospettato di congiura, imprigionato e torturato, poi si ritira nel podere dell'<b>Albergaccio</b> a Sant'Andrea in Percussina.</p><p>Lì, come racconta nella celebre lettera a Francesco Vettori del 10 dicembre 1513, la sera indossa «panni reali e curiali» per dialogare con gli antichi e compone <b>Il Principe</b>. Il trattato fonda l'<b>autonomia della politica dalla morale</b>: il principe deve guardare alla «verità effettuale della cosa», non a come dovrebbe essere il mondo; deve saper essere «golpe e lione», usare la propria <b>virtù</b> per dominare la <b>fortuna</b>. L'ultimo capitolo è un'appassionata esortazione a liberare l'Italia dai «barbari».</p><p>Nei <i>Discorsi sopra la prima deca di Tito Livio</i> riflette sulla repubblica romana; scrive inoltre la <i>Mandragola</i>, la più bella commedia del Cinquecento, e le <i>Istorie fiorentine</i>.</p>`,
+  w:[["1513","Il Principe","stampato postumo nel 1532"],["1513-19","Discorsi sopra la prima deca di Tito Livio","riflessione sulla repubblica"],["1518","Mandragola","commedia"],["1519-20","Dell'arte della guerra","dialogo"],["1520-25","Istorie fiorentine","storia di Firenze"]],
+  x:["verità effettuale","virtù e fortuna","autonomia della politica","imitazione degli antichi","milizie proprie","pessimismo antropologico"],
+  q:["andare drieto alla verità effettuale della cosa, che alla immaginazione di essa","Il Principe, XV"],rel:["guicciardini","borgia","savonarola"]},
+ {id:"bembo",n:"Pietro Bembo",a:1470,b:1547,per:["ip-rin"],d:"Venezia 1470 – Roma 1547",sub:"Il legislatore della lingua italiana",
+  t:`<p>Patrizio veneziano, poi cardinale. Nelle <b>Prose della volgar lingua</b> (1525) risolve la «questione della lingua» proponendo come modello il fiorentino letterario del Trecento: <b>Petrarca per la poesia, Boccaccio per la prosa</b>. Le sue <i>Rime</i> (1530) fondano il petrarchismo cinquecentesco. Curò per Aldo Manuzio le edizioni di Petrarca (1501) e Dante (1502).</p>`,
+  x:["questione della lingua","classicismo","petrarchismo"]},
+ {id:"ariosto",n:"Ludovico Ariosto",a:1474,b:1533,big:1,per:["ip-rin"],d:"Reggio Emilia 1474 – Ferrara 1533",sub:"Il poeta dell'Orlando furioso",
+  t:`<p>Primo di dieci figli, alla morte del padre (1500) deve occuparsi della famiglia. Entra al servizio del cardinale <b>Ippolito d'Este</b>, che gli affida missioni diplomatiche ma non apprezza la sua poesia; poi passa al duca Alfonso, che lo nomina governatore della turbolenta <b>Garfagnana</b> (1522-25). Torna infine a Ferrara, nella sua casa («parva sed apta mihi»), accanto ad Alessandra Benucci.</p><p>L'<b>Orlando furioso</b> continua l'<i>Innamorato</i> di [[boiardo]]. Esce in tre edizioni: 1516 (40 canti), 1521 e 1532 (46 canti, con la lingua rivista secondo le norme di [[bembo]]). Tre filoni intrecciati con la tecnica dell'<b>entrelacement</b>: la guerra tra cristiani e saraceni, la follia d'amore di Orlando per Angelica, l'amore di Ruggiero e Bradamante, mitici capostipiti degli Este. I personaggi inseguono oggetti del desiderio che sfuggono sempre (la <b>«quête»</b>); l'autore li governa con un'<b>ironia</b> distaccata e una perfetta armonia dell'ottava.</p><p>Scrisse anche sette <i>Satire</i> in terzine e commedie fondamentali per il teatro rinascimentale (<i>La Cassaria</i>, <i>I Suppositi</i>).</p>`,
+  w:[["1508-09","La Cassaria, I Suppositi","commedie"],["1516-1532","Orlando furioso","poema in ottave: edizioni 1516, 1521, 1532"],["1517-25","Satire","7 satire in terzine"]],
+  x:["ironia","quête/inchiesta","follia","entrelacement","armonia","Fortuna","encomio estense"],
+  q:["Le donne, i cavallier, l'arme, gli amori, / le cortesie, l'audaci imprese io canto","Orlando furioso I, 1"],rel:["boiardo","tasso","cervantes"]},
+ {id:"castiglione",n:"Baldassarre Castiglione",a:1478,b:1529,per:["ip-rin"],d:"Casatico 1478 – Toledo 1529",sub:"L'autore del Cortegiano",
+  t:`<p>Diplomatico alla corte di Urbino e poi nunzio pontificio in Spagna. <b>Il libro del Cortegiano</b> (1528) è un dialogo ambientato a Urbino nel 1507, che disegna il perfetto uomo di corte: colto, elegante, versatile, capace di <b>«sprezzatura»</b>, cioè di fare con naturalezza ciò che costa fatica. Fu un bestseller europeo.</p>`},
+ {id:"guicciardini",n:"Francesco Guicciardini",a:1483,b:1540,per:["ip-rin"],d:"Firenze 1483 – Arcetri 1540",sub:"Lo storico delle «calamità d'Italia»",
+  t:`<p>Aristocratico, giurista, ambasciatore in Spagna, governatore pontificio di Modena, Reggio e della Romagna, luogotenente dell'esercito della Lega di Cognac. Meno teorico di [[machiavelli]], di cui critica la fiducia nelle regole generali: ogni caso è diverso, serve la <b>«discrezione»</b> e la cura del proprio <b>«particulare»</b>. I <b>Ricordi</b> sono massime di saggezza pratica e disincantata; la <b>Storia d'Italia</b> (1537-40), dal 1492 al 1534, è il primo capolavoro della storiografia moderna.</p>`,
+  w:[["1512-30","Ricordi","massime"],["1537-40","Storia d'Italia","1492-1534"]],x:["discrezione","particulare","pessimismo"]},
+ {id:"aretino",n:"Pietro Aretino",a:1492,b:1556,per:["ip-rin"],d:"Arezzo 1492 – Venezia 1556",sub:"Il «flagello dei principi»",
+  t:`<p>Scrittore spregiudicato, vive a Venezia della propria penna, temuto e pagato dai potenti per le sue lettere e i suoi libelli. Autore di commedie (<i>La cortigiana</i>), dialoghi irriverenti e di sei libri di <i>Lettere</i>: il primo intellettuale-giornalista.</p>`},
+ {id:"colonna",n:"Vittoria Colonna",a:1492,b:1547,per:["ip-rin"],d:"Marino 1492 – Roma 1547",sub:"La maggiore poetessa del petrarchismo",
+  t:`<p>Nobildonna romana, vedova del marchese di Pescara, canta in rime petrarchesche il marito perduto e poi temi spirituali, vicini agli ambienti riformatori. Amica di [[michelangelo]], che le dedica alcune delle sue rime più intense.</p>`},
+ {id:"folengo",n:"Teofilo Folengo",a:1491,b:1544,per:["ip-rin"],d:"Mantova 1491 – Campese 1544",sub:"Il poeta della lingua maccheronica",
+  t:`<p>Monaco benedettino irrequieto. Il <b>Baldus</b> è un poema eroicomico in lingua <b>maccheronica</b>: morfologia latina e lessico dialettale padano, in esametri. Una parodia anticlassica che piacerà a Rabelais.</p>`},
+ {id:"dellacasa",n:"Giovanni Della Casa",a:1503,b:1556,per:["ip-rin","ip-ctr"],d:"Mugello 1503 – Roma 1556",sub:"L'autore del Galateo",
+  t:`<p>Arcivescovo e nunzio a Venezia, dove stila il primo Indice dei libri proibiti. Il <b>Galateo</b> (postumo, 1558) è un trattato di buone maniere così fortunato che il suo titolo è diventato un nome comune. Le sue rime, gravi e spezzate, anticipano Tasso.</p>`},
+ {id:"gstampa",n:"Gaspara Stampa",a:1523,b:1554,c0:1,per:["ip-rin","ip-ctr"],d:"Padova c. 1523 – Venezia 1554",sub:"La voce femminile più intensa del petrarchismo",
+  t:`<p>Cantante e poetessa veneziana. Le <i>Rime</i> (postume, 1554) raccontano il suo amore infelice per il conte Collaltino di Collalto con un'immediatezza appassionata che rinnova il linguaggio petrarchesco.</p>`},
+
+ /* ---- Controriforma ---- */
+ {id:"tasso",n:"Torquato Tasso",a:1544,b:1595,big:1,per:["ip-ctr"],d:"Sorrento 1544 – Roma 1595",sub:"Il poeta della Gerusalemme liberata",
+  t:`<p>Figlio del poeta cortigiano Bernardo, segue il padre esule tra varie corti e studia a Padova e Bologna. Nel 1565 entra al servizio degli Este a <b>Ferrara</b>, dove vive gli anni più felici: scrive la favola pastorale <b>Aminta</b> (1573), rappresentata a corte, e completa nel 1575 la <b>Gerusalemme liberata</b>.</p><p>Inizia però una tormentosa revisione: Tasso sottopone il poema a censori e letterati, temendo di aver violato le regole aristoteliche e l'ortodossia religiosa. Le inquietudini si trasformano in mania di persecuzione; dopo una scenata in pubblico, nel 1579 il duca Alfonso II lo fa rinchiudere nell'ospedale di <b>Sant'Anna</b>, dove resta sette anni. Intanto il poema circola in edizioni non autorizzate (1580-81) e ha successo immenso. Liberato, vaga per l'Italia; riscrive il poema come <i>Gerusalemme conquistata</i> (1593) e muore a <b>Roma</b>, nel convento di Sant'Onofrio al Gianicolo, dove doveva essere incoronato poeta in Campidoglio.</p><p>La <i>Liberata</i> canta la prima crociata e la conquista di Gerusalemme guidata da Goffredo di Buglione: un'epica cristiana e unitaria, ma attraversata da forze che «deviano» – l'amore, la magia, la seduzione (Armida, Rinaldo, Tancredi e Clorinda, Erminia). È il poema del <b>«bifrontismo»</b>: tra norma e desiderio, ortodossia e sensualità, con una malinconia tutta moderna.</p>`,
+  w:[["1562","Rinaldo","poema giovanile"],["1573","Aminta","favola pastorale"],["1575","Gerusalemme liberata","stampata 1581"],["1580-94","Dialoghi, Lettere, Rime",""],["1593","Gerusalemme conquistata","riscrittura"]],
+  x:["bifrontismo","epica cristiana","conflitto norma/desiderio","malinconia","meraviglioso cristiano","«parlar disgiunto»"],
+  q:["Canto l'arme pietose e 'l capitano / che 'l gran sepolcro liberò di Cristo","Gerusalemme liberata I, 1"],rel:["ariosto","trento","leopardi"]},
+
+ /* ---- Barocco ---- */
+ {id:"bruno",n:"Giordano Bruno",a:1548,b:1600,per:["ip-ctr","ip-bar"],d:"Nola 1548 – Roma 1600",sub:"Il filosofo dell'universo infinito",
+  t:`<p>Frate domenicano fuggito dal convento, vaga per l'Europa (Ginevra, Parigi, Londra, Wittenberg, Praga). Sostiene un universo infinito con infiniti mondi e una visione panteistica della natura. Nei dialoghi in volgare (<i>La cena de le Ceneri</i>, <i>De l'infinito, universo e mondi</i>, <i>Spaccio de la bestia trionfante</i>) e nella commedia <i>Candelaio</i> unisce speculazione e invenzione linguistica. Consegnato all'Inquisizione, rifiuta di abiurare ed è arso vivo in <b>Campo de' Fiori</b> il 17 febbraio 1600, dove oggi sorge la sua statua.</p>`},
+ {id:"sarpi",n:"Paolo Sarpi",a:1552,b:1623,per:["ip-bar"],d:"Venezia 1552 – Venezia 1623",sub:"Lo storico del Concilio di Trento",
+  t:`<p>Frate servita e consultore della Repubblica di Venezia, ne difende l'autonomia contro l'interdetto papale (1606). La sua <i>Istoria del Concilio Tridentino</i> (Londra, 1619) è una lucida critica della politica papale.</p>`},
+ {id:"galileo",n:"Galileo Galilei",a:1564,b:1642,big:1,per:["ip-bar"],d:"Pisa 1564 – Arcetri 1642",sub:"Lo scienziato che fondò il metodo sperimentale, maestro della prosa scientifica",
+  t:`<p>Professore di matematica a Pisa e poi a <b>Padova</b> (1592-1610), «li diciotto anni migliori di tutta la mia età». Nel 1609 perfeziona il <b>cannocchiale</b> e lo punta al cielo: scopre le montagne della Luna, le fasi di Venere, i satelliti di Giove, che dedica ai Medici. Il <b>Sidereus Nuncius</b> (1610) lo rende celebre in tutta Europa; diventa «filosofo e matematico» del Granduca di Toscana.</p><p>Nelle <i>Lettere copernicane</i> (1613-15) sostiene che la Scrittura insegna «come si vadia al cielo, e non come vadia il cielo»: scienza e fede hanno campi diversi. Nel 1616 la Chiesa condanna il copernicanesimo. Nel <b>Saggiatore</b> (1623) afferma che il libro della natura è scritto in lingua matematica. Il <b>Dialogo sopra i due massimi sistemi del mondo</b> (1632), in volgare, mette a confronto il copernicano Salviati, il saggio Sagredo e l'aristotelico Simplicio: ne segue il processo e l'<b>abiura</b> (Roma, 22 giugno 1633). Confinato ad Arcetri, quasi cieco, pubblica in Olanda i <i>Discorsi e dimostrazioni matematiche intorno a due nuove scienze</i> (1638).</p><p>La sua prosa, chiara, ironica e precisa, è un modello letterario: Calvino lo considerava il più grande scrittore italiano.</p>`,
+  w:[["1610","Sidereus Nuncius","in latino"],["1613-15","Lettere copernicane","a Castelli e a Cristina di Lorena"],["1623","Il Saggiatore","polemica sulle comete e sul metodo"],["1632","Dialogo sopra i due massimi sistemi","in volgare"],["1638","Discorsi intorno a due nuove scienze","Leida"]],
+  x:["sensate esperienze e necessarie dimostrazioni","autonomia della scienza","libro della natura","dialogo","prosa scientifica in volgare"],
+  q:["egli è scritto in lingua matematica, e i caratteri son triangoli, cerchi, ed altre figure geometriche","Il Saggiatore"],rel:["copern","trento","newton","campanella"]},
+ {id:"tassoni",n:"Alessandro Tassoni",a:1565,b:1635,per:["ip-bar"],d:"Modena 1565 – Modena 1635",sub:"L'inventore del poema eroicomico",
+  t:`<p>La <b>Secchia rapita</b> (1622) narra in ottave una guerra tra Modena e Bologna per una secchia di legno: il primo poema eroicomico, che parodia l'epica tassiana mescolando sublime e grottesco.</p>`},
+ {id:"basile",n:"Giambattista Basile",a:1566,b:1632,per:["ip-bar"],d:"Napoli 1566 – Giugliano 1632",sub:"Il primo grande raccoglitore di fiabe",
+  t:`<p><i>Lo cunto de li cunti</i> (1634-36), in napoletano barocco, raccoglie 50 fiabe raccontate in cinque giornate: vi compaiono le prime versioni letterarie di Cenerentola e del Gatto con gli stivali, prima di Perrault e dei Grimm.</p>`},
+ {id:"campanella",n:"Tommaso Campanella",a:1568,b:1639,per:["ip-bar"],d:"Stilo 1568 – Parigi 1639",sub:"Il filosofo della Città del Sole",
+  t:`<p>Frate domenicano calabrese, organizza nel 1599 una congiura contro gli Spagnoli e passa ventisette anni in carcere a Napoli. Lì scrive <b>La Città del Sole</b> (1602), utopia di una repubblica comunitaria governata dal sapere, e difende Galileo (<i>Apologia pro Galileo</i>). Muore esule a Parigi.</p>`},
+ {id:"marino",n:"Giovan Battista Marino",a:1569,b:1625,per:["ip-bar"],big:0,d:"Napoli 1569 – Napoli 1625",sub:"Il caposcuola della poesia barocca",
+  t:`<p>Vita avventurosa tra Napoli, Roma, Torino (dove finisce in carcere) e Parigi, alla corte di Maria de' Medici: è il poeta più celebre d'Europa. L'<b>Adone</b> (1623), oltre 40.000 versi, dilata una semplice vicenda mitologica in un'infinita serie di digressioni e descrizioni sensuali. Teorizza la poetica della <b>meraviglia</b> e della metafora ardita (concettismo).</p>`,
+  q:["È del poeta il fin la meraviglia","Murtoleide, fischiata 33"]},
+
+ /* ---- Arcadia e primo Settecento ---- */
+ {id:"vico",n:"Giambattista Vico",a:1668,b:1744,per:["ip-arc"],d:"Napoli 1668 – Napoli 1744",sub:"Il filosofo della storia",
+  t:`<p>Professore di retorica a Napoli. Nella <b>Scienza nuova</b> (1725, 1744) afferma che l'uomo può conoscere davvero solo ciò che ha fatto (<i>verum ipsum factum</i>), cioè la storia. Le civiltà percorrono tre età (degli dèi, degli eroi, degli uomini) e possono ricadere nella barbarie (corsi e ricorsi). Omero non è un individuo ma la voce di un popolo: la poesia è la lingua primitiva della fantasia. Idee che i romantici riscopriranno.</p>`},
+ {id:"muratori",n:"Ludovico Antonio Muratori",a:1672,b:1750,per:["ip-arc"],d:"Vignola 1672 – Modena 1750",sub:"Il padre della storiografia medievale",
+  t:`<p>Sacerdote e bibliotecario degli Este, raccoglie e pubblica le fonti della storia d'Italia (<i>Rerum Italicarum Scriptores</i>) e scrive gli <i>Annali d'Italia</i>. Sostiene una religiosità razionale e il «buon gusto» contro gli eccessi barocchi.</p>`},
+ {id:"metastasio",n:"Pietro Metastasio",a:1698,b:1782,per:["ip-arc"],d:"Roma 1698 – Vienna 1782",sub:"Il poeta del melodramma",
+  t:`<p>Pietro Trapassi, romano, allievo dell'arcade Gravina (che gli grecizza il nome). Dopo il successo della <i>Didone abbandonata</i> (1724) diventa nel 1730 <b>poeta cesareo</b> alla corte di Vienna. I suoi libretti (<i>Olimpiade</i>, <i>La clemenza di Tito</i>, musicata anche da Mozart) sono messi in musica centinaia di volte: limpidezza, musicalità, equilibrio fra «recitativo» e «arie». Il trionfo europeo del gusto arcadico.</p>`},
+
+ /* ---- Illuminismo ---- */
+ {id:"goldoni",n:"Carlo Goldoni",a:1707,b:1793,big:1,per:["ip-ill"],d:"Venezia 1707 – Parigi 1793",sub:"Il riformatore del teatro comico",
+  t:`<p>Veneziano, studia legge e fa l'avvocato a Pisa, ma la passione per il teatro prevale. Dal 1748 lavora per il capocomico Medebach al Teatro Sant'Angelo, poi (1753) per il Teatro San Luca. Celebre la scommessa del 1750-51: <b>sedici commedie nuove</b> in un anno.</p><p>La sua <b>riforma</b> sostituisce la Commedia dell'arte – con le maschere fisse e il canovaccio su cui gli attori improvvisavano – con un <b>testo interamente scritto</b> e con <b>caratteri</b> individuali presi dalla vita reale. I suoi due «libri» sono il <b>Mondo</b> e il <b>Teatro</b>. Mette in scena la borghesia mercantile veneziana, con le sue virtù e i suoi limiti, ma anche il popolo e la nobiltà decaduta. Capolavori: <i>La locandiera</i> (1753), <i>Il campiello</i>, <i>I rusteghi</i>, la <i>Trilogia della villeggiatura</i>, <i>Le baruffe chiozzotte</i> (1762).</p><p>Attaccato da Carlo Gozzi e Pietro Chiari, nel 1762 parte per <b>Parigi</b>, chiamato dalla Comédie Italienne. Non tornerà più. Scrive in francese le sue memorie (<i>Mémoires</i>, 1787) e muore povero nel 1793, dopo che la Rivoluzione gli ha tolto la pensione di corte.</p>`,
+  w:[["1750","La bottega del caffè","dalle 16 commedie nuove"],["1753","La locandiera","Mirandolina"],["1760","I rusteghi","in dialetto"],["1761","Trilogia della villeggiatura",""],["1762","Le baruffe chiozzotte","il popolo di Chioggia"],["1787","Mémoires","autobiografia in francese"]],
+  x:["riforma del teatro","Mondo e Teatro","caratteri","borghesia","dialetto","realismo"],
+  q:["I due libri su' quali ho più meditato, e di cui non mi pentirò mai d'essermi servito, furono il Mondo e il Teatro","Prefazione alla prima raccolta delle commedie, 1750"],rel:["moliere"]},
+ {id:"verri",n:"Pietro Verri",a:1728,b:1797,per:["ip-ill"],d:"Milano 1728 – Milano 1797",sub:"L'animatore dell'Illuminismo lombardo",
+  t:`<p>Con il fratello Alessandro fonda l'Accademia dei Pugni e la rivista <b>«Il Caffè»</b> (1764-66), modellata sullo «Spectator» inglese: cose, non parole. Economista e funzionario riformatore sotto Maria Teresa, scrive le <i>Osservazioni sulla tortura</i>, che ispireranno a Manzoni la <i>Storia della colonna infame</i>.</p>`},
+ {id:"parini",n:"Giuseppe Parini",a:1729,b:1799,big:1,per:["ip-ill"],d:"Bosisio 1729 – Milano 1799",sub:"Il poeta civile dell'Illuminismo lombardo",
+  t:`<p>Di umili origini, si fa prete per poter godere di un'eredità e lavora come precettore nelle case nobili milanesi (i Serbelloni), osservando da vicino l'aristocrazia oziosa. Professore di eloquenza a Brera, nel 1796 partecipa brevemente alla municipalità filofrancese, ma se ne distacca per gli eccessi dei giacobini.</p><p><b>Il Giorno</b> è un poemetto satirico in endecasillabi sciolti: il poeta finge di essere il precettore di un «giovin signore» e gli insegna come trascorrere la giornata (<i>Il Mattino</i>, 1763; <i>Il Mezzogiorno</i>, 1765; <i>Il Vespro</i> e <i>La Notte</i>, incompiuti). L'arma è l'<b>ironia antifrastica</b>: l'esaltazione della vita nobiliare ne mostra la vacuità e l'ingiustizia (celebre l'episodio della «vergine cuccia»). Nelle <b>Odi</b> (<i>La salubrità dell'aria</i>, <i>L'educazione</i>, <i>La caduta</i>) unisce impegno civile e misura classica.</p>`,
+  w:[["1763-65","Il Giorno: Mattino, Mezzogiorno","poemetto satirico"],["1757-95","Odi","la salubrità dell'aria, il bisogno, la caduta"]],
+  x:["satira","ironia antifrastica","utile e dilettevole","critica della nobiltà","classicismo"],rel:["verri","beccaria"]},
+ {id:"cesarotti",n:"Melchiorre Cesarotti",a:1730,b:1808,per:["ip-prer","ip-ill"],d:"Padova 1730 – Selvazzano 1808",sub:"Il traduttore di Ossian",
+  t:`<p>Professore a Padova, traduce in endecasillabi sciolti le <b>Poesie di Ossian</b> (1763), presunti canti di un bardo gaelico in realtà composti da Macpherson. Il libro diffonde in Italia il gusto preromantico per paesaggi notturni e nebbiosi, eroi malinconici, passioni primitive. Fu maestro del giovane Foscolo.</p>`},
+ {id:"beccaria",n:"Cesare Beccaria",a:1738,b:1794,per:["ip-ill"],d:"Milano 1738 – Milano 1794",sub:"L'autore di Dei delitti e delle pene",
+  t:`<p>Membro del gruppo del «Caffè», scrive a ventisei anni <b>Dei delitti e delle pene</b> (1764), uno dei libri più influenti dell'Illuminismo europeo, lodato da Voltaire: le pene devono essere certe e proporzionate, non crudeli; la tortura e la pena di morte sono inutili e ingiuste. Fu il nonno di Alessandro [[manzoni]].</p>`},
+ {id:"alfieri",n:"Vittorio Alfieri",a:1749,b:1803,big:1,per:["ip-prer","ip-ill"],d:"Asti 1749 – Firenze 1803",sub:"Il poeta tragico della libertà",
+  t:`<p>Nobile piemontese, ricchissimo, educato all'Accademia reale di Torino («otto anni di ineducazione»), viaggia irrequieto per l'Europa. Verso il 1775 la «conversione» letteraria: si chiude negli studi, impara il toscano e il latino, si fa legare alla sedia per scrivere. Per essere libero dal re di Sardegna cede i beni alla sorella (1778). Lega la sua vita a Luisa Stolberg, contessa d'Albany.</p><p>Nei trattati <i>Della tirannide</i> e <i>Del principe e delle lettere</i> condanna ogni potere assoluto. Le sue 19 <b>tragedie</b>, essenziali, rapide, dal verso aspro e spezzato, mettono in scena il conflitto tra un eroe che anela alla libertà e un tiranno (<i>Filippo</i>, <i>Antigone</i>, <i>Virginia</i>), fino al tiranno che è nemico di sé stesso: <b>Saul</b> (1782) e la passione colpevole di <b>Mirra</b> (1786). Nella <b>Vita scritta da esso</b> si rappresenta come eroe titanico. Odia la Francia rivoluzionaria (<i>Misogallo</i>). È sepolto in Santa Croce, in un monumento di Canova.</p>`,
+  w:[["1777","Della tirannide","trattato"],["1782","Saul","tragedia"],["1786","Mirra","tragedia"],["1790-1803","Vita scritta da esso","autobiografia"]],
+  x:["titanismo","libertà contro tirannide","eroe solitario","volontà","preromanticismo"],
+  q:["volli, e volli sempre, e fortissimamente volli","Lettera responsiva a Ranieri de' Calzabigi"],rel:["foscolo"]},
+
+ /* ---- Neoclassicismo ---- */
+ {id:"pindemonte",n:"Ippolito Pindemonte",a:1753,b:1828,per:["ip-neo"],d:"Verona 1753 – Verona 1828",sub:"Il traduttore dell'Odissea",
+  t:`<p>Poeta veronese dalla malinconia preromantica, a lui [[foscolo]] dedica i <i>Sepolcri</i>. Celebre la sua traduzione dell'<b>Odissea</b> (1822), compagna dell'<i>Iliade</i> di Monti nelle scuole per oltre un secolo.</p>`},
+ {id:"monti",n:"Vincenzo Monti",a:1754,b:1828,per:["ip-neo"],d:"Alfonsine 1754 – Milano 1828",sub:"Il poeta neoclassico ufficiale, traduttore dell'Iliade",
+  t:`<p>Poeta di grande versatilità, celebra di volta in volta il Papa, la Rivoluzione, Napoleone e l'Austria: per questo fu accusato di opportunismo. È però il massimo interprete del neoclassicismo italiano: il suo capolavoro è la traduzione dell'<b>Iliade</b> (1810), «traduttor dei traduttori d'Omero» (Foscolo), che generazioni di liceali hanno imparato a memoria. Partecipa alla polemica classico-romantica con il <i>Sermone sulla mitologia</i>.</p>`},
+ {id:"foscolo",n:"Ugo Foscolo",a:1778,b:1827,big:1,per:["ip-neo","ip-prer"],d:"Zante 1778 – Turnham Green (Londra) 1827",sub:"Il poeta delle illusioni, tra Neoclassicismo e Romanticismo",
+  t:`<p>Nasce a <b>Zante</b>, isola ionia veneziana, da padre veneziano e madre greca. Dopo la morte del padre si trasferisce a Venezia. Accoglie con entusiasmo Napoleone, ma il <b>Trattato di [[campoformio|Campoformio]]</b> (1797), che cede Venezia all'Austria, è per lui un tradimento. Si arruola nell'esercito francese, combatte, ha amori tumultuosi. Nel 1815, al ritorno degli Austriaci, sceglie l'<b>esilio</b>: Svizzera e poi Inghilterra, dove muore povero nel 1827. Nel 1871 i suoi resti sono traslati in Santa Croce.</p><p><b>Le ultime lettere di Jacopo Ortis</b> (1802, sul modello del <i>Werther</i>) raccontano la doppia disperazione di un giovane – per la patria tradita e per l'amore impossibile di Teresa – fino al suicidio. Nei <b>Sonetti</b> (1803: <i>Alla sera</i>, <i>A Zacinto</i>, <i>In morte del fratello Giovanni</i>) e nelle <b>Odi</b> neoclassiche affiora la sua visione: la realtà è materia in perenne trasformazione, ma l'uomo si salva con le <b>illusioni</b> (patria, bellezza, amore, gloria, poesia).</p><p>Il carme <b>Dei Sepolcri</b> (1807), nato dalla discussione sull'editto napoleonico di Saint-Cloud, sostiene che le tombe non servono ai morti ma ai vivi: custodiscono gli affetti, la civiltà e le memorie dei grandi (Santa Croce), e la poesia le rende eterne. Incompiute restano <i>Le Grazie</i>, inno alla bellezza che rasserena.</p>`,
+  w:[["1802","Ultime lettere di Jacopo Ortis","romanzo epistolare (ed. definitiva 1817)"],["1803","Poesie: Sonetti e Odi","Alla sera, A Zacinto, In morte del fratello Giovanni"],["1807","Dei Sepolcri","carme in endecasillabi sciolti"],["1812-22","Le Grazie","carme incompiuto"],["1813","Viaggio sentimentale (traduz. da Sterne)","con la Notizia intorno a Didimo Chierico"]],
+  x:["illusioni","materialismo meccanicistico","esilio","patria tradita","funzione civile della poesia","bellezza consolatrice","mito"],
+  q:["Né più mai toccherò le sacre sponde / ove il mio corpo fanciulletto giacque","A Zacinto, vv. 1-2"],rel:["alfieri","goethe","napoleone","campoformio","pindemonte"]},
+
+ /* ---- Romanticismo ---- */
+ {id:"porta",n:"Carlo Porta",a:1775,b:1821,per:["ip-rom"],d:"Milano 1775 – Milano 1821",sub:"Il grande poeta in milanese",
+  t:`<p>Impiegato, scrive in dialetto milanese satire e poemetti realistici (<i>Desgrazzi de Giovannin Bongee</i>, <i>La Ninetta del Verzee</i>) che danno voce agli umili e colpiscono nobiltà e clero. Romantico militante e amico di Manzoni.</p>`},
+ {id:"berchet",n:"Giovanni Berchet",a:1783,b:1851,per:["ip-rom"],d:"Milano 1783 – Torino 1851",sub:"Il manifesto del Romanticismo italiano",
+  t:`<p>Risponde alla Staël con la <b>Lettera semiseria di Grisostomo al suo figliuolo</b> (1816), il manifesto del Romanticismo italiano: la poesia deve essere «popolare», rivolgersi non ai pedanti («Parigini») né ai rozzi («Ottentoti») ma al popolo medio. Collaboratore del «Conciliatore», carbonaro, esule, poeta patriottico.</p>`},
+ {id:"manzoni",n:"Alessandro Manzoni",a:1785,b:1873,big:1,per:["ip-rom"],d:"Milano 1785 – Milano 1873",sub:"L'autore dei Promessi sposi",
+  t:`<p>Figlio di Giulia Beccaria (e nipote di [[beccaria|Cesare]]), cresce in collegi religiosi. Dal 1805 vive a <b>Parigi</b> con la madre, frequentando gli <i>idéologues</i>, eredi dell'Illuminismo, e lo storico Fauriel. Sposa la calvinista Enrichetta Blondel; nel 1810 la famiglia si <b>converte</b> al cattolicesimo. Da allora vive a Milano e nella villa di Brusuglio, schivo e tormentato dalle nevrosi.</p><p>Dopo gli <b>Inni sacri</b>, si impegna nel teatro: <b>Il Conte di Carmagnola</b> (1820) e <b>Adelchi</b> (1822), tragedie storiche che rifiutano le unità aristoteliche e contengono cori lirici. Nel 1821 scrive le odi civili <b>Marzo 1821</b> e <b>Il cinque maggio</b>, per la morte di [[napoleone]]. Nella <i>Lettera sul Romanticismo</i> (1823) fissa la sua poetica: la letteratura deve avere «l'utile per iscopo, il vero per soggetto e l'interessante per mezzo».</p><p>Il romanzo nasce come <i>Fermo e Lucia</i> (1821-23), diventa <b>I promessi sposi</b> (1827) e infine, dopo la «risciacquatura dei panni in Arno», l'edizione definitiva del <b>1840-42</b>, scritta nel fiorentino parlato colto. È la storia di due umili, Renzo e Lucia, nella Lombardia spagnola del 1628-30, tra soprusi, carestia, rivolta e peste: la <b>Provvidenza</b> non elimina il male, ma gli dà senso. Il romanzo diventa il modello della lingua italiana unitaria. Senatore del Regno (1860), muore nel 1873: Verdi compone per lui la <i>Messa da Requiem</i>.</p>`,
+  w:[["1812-22","Inni sacri","tra cui La Pentecoste"],["1820","Il Conte di Carmagnola","tragedia"],["1821","Marzo 1821 · Il cinque maggio","odi civili"],["1822","Adelchi","tragedia, con i cori"],["1823","Lettera sul Romanticismo","a Cesare d'Azeglio"],["1827 / 1840-42","I promessi sposi","«ventisettana» e «quarantana»"],["1842","Storia della colonna infame","sui processi agli untori"]],
+  x:["vero storico","Provvidenza","umili","male e giustizia","questione della lingua","romanzo storico","cristianesimo"],
+  q:["Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti…","I promessi sposi, cap. I"],rel:["scott","beccaria","napoleone","leopardi"]},
+ {id:"pellico",n:"Silvio Pellico",a:1789,b:1854,per:["ip-rom"],d:"Saluzzo 1789 – Torino 1854",sub:"L'autore delle Mie prigioni",
+  t:`<p>Redattore del «Conciliatore», carbonaro, è arrestato nel 1820 e condannato al carcere duro nella fortezza dello Spielberg. In <b>Le mie prigioni</b> (1832) racconta con mitezza cristiana la sua prigionia: secondo Metternich, il libro danneggiò l'Austria più di una battaglia perduta.</p>`},
+ {id:"belli",n:"Giuseppe Gioachino Belli",a:1791,b:1863,per:["ip-rom"],d:"Roma 1791 – Roma 1863",sub:"Il poeta di Roma",
+  t:`<p>Romano, impiegato pontificio. In oltre <b>2.200 sonetti romaneschi</b> (1830-1849) vuole lasciare «un monumento di quello che oggi è la plebe di Roma»: un affresco crudo, comico e tragico della Roma papalina. In pubblico era un conservatore e chiese di bruciarli; per fortuna non fu ascoltato. A Trastevere gli è dedicata la piazza con il suo monumento.</p>`,
+  q:["Io qui ho deliberato di lasciare un monumento di quello che oggi è la plebe di Roma","Introduzione ai Sonetti"]},
+ {id:"leopardi",n:"Giacomo Leopardi",a:1798,b:1837,big:1,per:["ip-rom"],d:"Recanati 1798 – Napoli 1837",sub:"Il poeta e pensatore del pessimismo e dell'infinito",
+  t:`<p>Primogenito del conte Monaldo, uomo colto e reazionario, e della rigida Adelaide Antici, trascorre l'adolescenza nella sterminata biblioteca paterna: «sette anni di studio matto e disperatissimo» che gli rovinano la salute. Filologo precocissimo, nel 1816 vive la «conversione» dall'erudizione al bello, e nel 1819 quella «dal bello al vero», cioè alla filosofia. Soffoca a Recanati («natio borgo selvaggio»): tenta la fuga nel 1819. Soggiorna a Roma (1822-23), delusa; poi Milano, Bologna, Firenze, Pisa. Dal 1833 vive a <b>Napoli</b> con l'amico Antonio Ranieri, dove muore nel 1837.</p><p>Il suo pensiero, annotato nello <b>Zibaldone</b>, evolve: la <b>teoria del piacere</b> (l'uomo desidera un piacere infinito che la realtà non può dare), il <b>pessimismo storico</b> (gli antichi erano felici grazie alle illusioni, la ragione moderna le ha distrutte), poi il <b>pessimismo cosmico</b>: è la <b>Natura</b>, «madre di parto e di voler matrigna», a condannare tutti gli esseri al dolore (<i>Dialogo della Natura e di un Islandese</i>). Ma nella <b>Ginestra</b> (1836) propone agli uomini di unirsi in una «social catena» contro la natura nemica.</p><p>I <b>Canti</b> (1831, 1835) raccolgono le canzoni civili, gli <b>idilli</b> (<i>L'infinito</i>, 1819), i grandi canti <b>pisano-recanatesi</b> (<i>A Silvia</i>, <i>Il sabato del villaggio</i>, <i>Canto notturno di un pastore errante dell'Asia</i>), il ciclo di Aspasia, la <i>Ginestra</i>. La poetica del <b>vago e indefinito</b> e della <b>rimembranza</b> fa delle parole stesse («lontano», «antico») strumenti di infinito.</p>`,
+  w:[["1817-32","Zibaldone di pensieri","diario intellettuale, 4.526 pagine"],["1819-21","Idilli","L'infinito, La sera del dì di festa, Alla luna"],["1824","Operette morali","dialoghi e prose filosofiche (ed. 1827)"],["1828-30","Canti pisano-recanatesi","A Silvia, Le ricordanze, Il sabato del villaggio, Canto notturno"],["1831 / 1835","Canti","Firenze, poi Napoli"],["1836","La ginestra","testamento poetico"]],
+  x:["teoria del piacere","pessimismo storico e cosmico","Natura matrigna","vago e indefinito","rimembranza","illusioni","social catena"],
+  q:["Sempre caro mi fu quest'ermo colle, / e questa siepe, che da tanta parte / dell'ultimo orizzonte il guardo esclude","L'infinito, vv. 1-3"],rel:["tasso","manzoni","foscolo"]},
+ {id:"tommaseo",n:"Niccolò Tommaseo",a:1802,b:1874,per:["ip-rom"],d:"Sebenico 1802 – Firenze 1874",sub:"Lessicografo e patriota",
+  t:`<p>Dalmata, cattolico liberale, ministro della Repubblica di Venezia nel 1848. Il suo <b>Dizionario della lingua italiana</b> (con Bellini) è ancora oggi uno strumento prezioso; scrisse anche il romanzo <i>Fede e bellezza</i> e il <i>Dizionario dei sinonimi</i>.</p>`},
+ {id:"desanctis",n:"Francesco De Sanctis",a:1817,b:1883,per:["ip-rom","ip-post"],d:"Morra Irpina 1817 – Napoli 1883",sub:"Il fondatore della critica letteraria moderna",
+  t:`<p>Patriota del 1848, carcerato ed esule, poi primo ministro della Pubblica Istruzione dell'Italia unita. La sua <b>Storia della letteratura italiana</b> (1870-71) racconta la letteratura come specchio della coscienza civile della nazione, da Dante al Risorgimento. È in gran parte grazie a lui che si studia la letteratura italiana come la studiate voi.</p>`},
+ {id:"collodi",n:"Carlo Collodi",a:1826,b:1890,per:["ip-post"],d:"Firenze 1826 – Firenze 1890",sub:"Il creatore di Pinocchio",
+  t:`<p>Carlo Lorenzini, giornalista e patriota. <b>Le avventure di Pinocchio</b> (a puntate dal 1881, in volume nel 1883), storia di un burattino che diventa bambino, è il libro italiano più tradotto al mondo: favola, romanzo di formazione e ritratto dell'Italia povera postunitaria.</p>`},
+ {id:"nievo",n:"Ippolito Nievo",a:1831,b:1861,per:["ip-rom"],d:"Padova 1831 – mar Tirreno 1861",sub:"Il romanziere del Risorgimento",
+  t:`<p>Garibaldino, vice-intendente della Spedizione dei Mille, muore a trent'anni nel naufragio del piroscafo Ercole. Le <b>Confessioni d'un italiano</b> (postume, 1867) sono l'autobiografia immaginaria di Carlo Altoviti, che da bambino nel castello di Fratta vede nascere l'Italia moderna: «Io nacqui veneziano… e morrò per la grazia di Dio italiano».</p>`},
+
+ /* ---- Italia unita ---- */
+ {id:"carducci",n:"Giosuè Carducci",a:1835,b:1907,big:1,per:["ip-post"],d:"Valdicastello 1835 – Bologna 1907",sub:"Il poeta-vate della nuova Italia, primo Nobel italiano",
+  t:`<p>Cresce in Maremma (Bolgheri, Castagneto), studia alla Scuola Normale di Pisa e con gli «Amici pedanti» difende il classicismo contro i romantici. Dal <b>1860</b> per oltre quarant'anni è professore di eloquenza all'Università di <b>Bologna</b>, dove ha come allievo [[pascoli]]. Giovane, è repubblicano, anticlericale e giacobino (l'<i>Inno a Satana</i>, 1863, celebra la ragione e il progresso; i <i>Giambi ed epodi</i> attaccano la classe politica); poi si avvicina alla monarchia. Senatore dal 1890, nel <b>1906</b> è il primo italiano a ricevere il <b>Premio Nobel</b>.</p><p>È il poeta ufficiale della «terza Italia»: canta la storia, le memorie della patria, il paesaggio. Nelle <b>Rime nuove</b> si trovano liriche intime e dolorose (<i>Pianto antico</i>, per la morte del figlio Dante, 1870; <i>San Martino</i>; <i>Traversando la Maremma toscana</i>). Nelle <b>Odi barbare</b> (1877) riproduce con gli accenti italiani i metri quantitativi della poesia greca e latina: «barbare» perché tali sarebbero sembrate a un greco o a un romano. Un esperimento che un liceale classico può apprezzare fino in fondo.</p>`,
+  w:[["1863","Inno a Satana","pubblicato 1865"],["1867-79","Giambi ed epodi","satira politica"],["1861-87","Rime nuove","Pianto antico, San Martino"],["1877-89","Odi barbare","metrica barbara"],["1899","Rime e ritmi",""]],
+  x:["classicismo","poeta-vate","storia e memoria","metrica barbara","lutto","Maremma"],
+  q:["L'albero a cui tendevi / la pargoletta mano","Pianto antico, vv. 1-2"],rel:["pascoli","dannunzio"]},
+ {id:"tarchetti",n:"Iginio Ugo Tarchetti",a:1839,b:1869,per:["ip-scap"],d:"San Salvatore Monferrato 1839 – Milano 1869",sub:"Il romanziere della Scapigliatura",
+  t:`<p>Ex ufficiale, scapigliato, muore di tisi a trent'anni. Il romanzo <b>Fosca</b> (1869) rovescia la donna-angelo: il protagonista è attratto morbosamente da una donna brutta e malata. Scrive anche racconti fantastici alla Poe.</p>`},
+ {id:"praga",n:"Emilio Praga",a:1839,b:1875,per:["ip-scap"],d:"Gorla 1839 – Milano 1875",sub:"Il poeta della Scapigliatura",
+  t:`<p>Pittore e poeta, consumato dall'alcol. La lirica <b>Preludio</b>, nella raccolta <i>Penombre</i> (1864), è un manifesto scapigliato: «Casto poeta che l'Italia adora, / vegliardo in sante visioni assorto», dice rivolto a Manzoni, «tu puoi morir!». La sua è la «canzone» del vero e del malato.</p>`},
+ {id:"capuana",n:"Luigi Capuana",a:1839,b:1915,per:["ip-ver"],d:"Mineo 1839 – Catania 1915",sub:"Il teorico del Verismo",
+  t:`<p>Critico letterario, porta in Italia le teorie di Zola e le adatta: il romanzo deve essere un «documento umano» e l'opera deve sembrare «essersi fatta da sé». Il suo romanzo <i>Giacinta</i> (1879), dedicato a Zola, è il primo esperimento verista. Amico e consigliere di [[verga]].</p>`},
+ {id:"verga",n:"Giovanni Verga",a:1840,b:1922,big:1,per:["ip-ver"],d:"Catania 1840 – Catania 1922",sub:"Il maestro del Verismo",
+  t:`<p>Di famiglia agiata catanese, esordisce con romanzi patriottici. Nel 1865 è a Firenze, capitale, poi dal 1872 a <b>Milano</b>, dove frequenta gli Scapigliati e i salotti: scrive romanzi di successo di ambiente mondano e passionale (<i>Storia di una capinera</i>, <i>Eva</i>). Nel 1874 il bozzetto siciliano <i>Nedda</i> annuncia la svolta.</p><p>Con <b>Rosso Malpelo</b> (1878) inizia il Verismo: il mondo arcaico della Sicilia è raccontato «dal basso», con la tecnica dell'<b>impersonalità</b> (l'autore si eclissa), la <b>regressione</b> del narratore al punto di vista della comunità, il <b>discorso indiretto libero</b>. La raccolta <i>Vita dei campi</i> (1880) contiene anche <i>La lupa</i>, <i>Cavalleria rusticana</i>, <i>Fantasticheria</i> (dove compare l'«ideale dell'ostrica»: chi si stacca dallo scoglio è perduto).</p><p>Progetta il <b>Ciclo dei Vinti</b>, cinque romanzi sui travolti dalla «fiumana del progresso» a ogni livello sociale; ne compie due: <b>I Malavoglia</b> (1881), la famiglia di pescatori di Aci Trezza rovinata dall'affare dei lupini, e <b>Mastro-don Gesualdo</b> (1889), il muratore arricchito schiacciato dalla «roba». Nelle <i>Novelle rusticane</i> (1883) il pessimismo si fa più cupo (<i>La roba</i>, <i>Libertà</i>). Dal 1893 si chiude a Catania nel silenzio; nel 1920 è nominato senatore.</p>`,
+  w:[["1871","Storia di una capinera","romanzo epistolare"],["1878","Rosso Malpelo","novella"],["1880","Vita dei campi","novelle"],["1881","I Malavoglia","primo romanzo dei Vinti"],["1883","Novelle rusticane","La roba, Libertà"],["1889","Mastro-don Gesualdo","secondo romanzo dei Vinti"]],
+  x:["impersonalità","eclissi dell'autore","regressione","ideale dell'ostrica","fiumana del progresso","la roba","pessimismo"],
+  q:["Malpelo si chiamava così perché aveva i capelli rossi; ed aveva i capelli rossi perché era un ragazzo malizioso e cattivo","Rosso Malpelo"],rel:["capuana","zola","flaubert","derobert"]},
+ {id:"boito",n:"Arrigo Boito",a:1842,b:1918,per:["ip-scap"],d:"Padova 1842 – Milano 1918",sub:"Poeta scapigliato e librettista di Verdi",
+  t:`<p>Compositore (<i>Mefistofele</i>) e poeta. La lirica <i>Dualismo</i> esprime la lacerazione scapigliata tra ideale e reale («Son luce ed ombra»). Scrive per Verdi i libretti di <i>Otello</i> e <i>Falstaff</i>, da Shakespeare.</p>`},
+ {id:"fogazzaro",n:"Antonio Fogazzaro",a:1842,b:1911,per:["ip-post","ip-dec"],d:"Vicenza 1842 – Vicenza 1911",sub:"Il romanziere cattolico",
+  t:`<p>Cattolico, sensibile al modernismo religioso (il romanzo <i>Il Santo</i> fu messo all'Indice). Il suo capolavoro, <b>Piccolo mondo antico</b> (1895), racconta in Valsolda, sul lago di Lugano, la crisi coniugale di Franco e Luisa negli anni del Risorgimento.</p>`},
+ {id:"deamicis",n:"Edmondo De Amicis",a:1846,b:1908,per:["ip-post"],d:"Oneglia 1846 – Bordighera 1908",sub:"L'autore di Cuore",
+  t:`<p>Ex ufficiale, poi socialista umanitario. <b>Cuore</b> (1886), diario di un anno scolastico di Enrico Bottini con i racconti mensili («Il piccolo patriota padovano», «Dagli Appennini alle Ande»), voleva educare i figli della nuova Italia ai valori patriottici e civili.</p>`},
+ {id:"serao",n:"Matilde Serao",a:1856,b:1927,per:["ip-ver"],d:"Patrasso 1856 – Napoli 1927",sub:"Giornalista e romanziera di Napoli",
+  t:`<p>Prima donna a fondare e dirigere un quotidiano in Italia («Il Giorno»), aveva fondato con il marito Scarfoglio «Il Mattino» (1892). Nel <i>Ventre di Napoli</i> (1884) denuncia la miseria dei quartieri popolari; il <i>Paese di Cuccagna</i> racconta l'ossessione per il lotto.</p>`},
+
+ /* ---- Decadentismo ---- */
+ {id:"pascoli",n:"Giovanni Pascoli",a:1855,b:1912,big:1,per:["ip-dec"],d:"San Mauro di Romagna 1855 – Bologna 1912",sub:"Il poeta del fanciullino",
+  t:`<p>Il <b>10 agosto 1867</b> il padre, amministratore di una tenuta, è ucciso a fucilate mentre torna a casa sul calesse: il delitto resta impunito. Seguono la morte della madre e di diversi fratelli. Studia all'Università di Bologna con [[carducci]]; si avvicina al socialismo e nel 1879 è arrestato per alcuni mesi. Professore di latino e greco nei licei (Matera, Massa, Livorno), poi all'università; nel 1905 succede a Carducci sulla cattedra bolognese. Ricostruisce con le sorelle Ida e Maria il <b>«nido»</b> familiare, poi a <b>Castelvecchio di Barga</b>. Latinista eccezionale, vince <b>tredici medaglie d'oro</b> al concorso di poesia latina di Amsterdam.</p><p>Nel saggio <b>Il fanciullino</b> (1897) spiega la sua poetica: in ogni uomo c'è un fanciullo che guarda il mondo con stupore e dà nomi nuovi alle cose; il poeta è colui che sa ascoltarlo. La poesia diventa conoscenza intuitiva, che coglie le misteriose relazioni tra le cose: è il <b>simbolismo</b> pascoliano.</p><p>In <b>Myricae</b> (1891), umili «tamerici», brevi quadri di campagna si caricano di presagi di morte (<i>X agosto</i>, <i>Lavandare</i>, <i>Temporale</i>, <i>Il lampo</i>, <i>Novembre</i>). La lingua è rivoluzionaria: onomatopee, <b>fonosimbolismo</b>, lessico tecnico (nomi precisi di piante e uccelli) accanto al «pregrammaticale» e al dialetto. Seguono i <i>Poemetti</i>, i <b>Canti di Castelvecchio</b> (1903: <i>Il gelsomino notturno</i>, <i>La mia sera</i>) e i <i>Poemi conviviali</i>, di argomento classico.</p>`,
+  w:[["1891","Myricae","ed. ampliate fino al 1903"],["1897","Il fanciullino","saggio di poetica"],["1897","Poemetti","Italy, Digitale purpurea"],["1903","Canti di Castelvecchio","Il gelsomino notturno"],["1904","Poemi conviviali","miti classici"],["1911","La grande proletaria s'è mossa","discorso sulla guerra di Libia"]],
+  x:["fanciullino","simbolismo","nido","morte e lutto","fonosimbolismo","frammentismo","natura"],
+  q:["San Lorenzo, io lo so perché tanto / di stelle per l'aria tranquilla / arde e cade","X agosto, vv. 1-3"],rel:["carducci","dannunzio"]},
+ {id:"derobert",n:"Federico De Roberto",a:1861,b:1927,per:["ip-ver"],d:"Napoli 1861 – Catania 1927",sub:"L'autore dei Viceré",
+  t:`<p>Catanese d'adozione, amico di Verga. <b>I Viceré</b> (1894) narra la decadenza della nobile famiglia Uzeda tra Risorgimento e Unità: i potenti cambiano bandiera per restare al potere. «Ora che l'Italia è fatta dobbiamo fare gli affari nostri». Un precedente del <i>Gattopardo</i>.</p>`},
+ {id:"svevo",n:"Italo Svevo",a:1861,b:1928,big:1,per:["ip-nov"],d:"Trieste 1861 – Motta di Livenza 1928",sub:"Il romanziere dell'inetto e della coscienza",
+  t:`<p>Aron Hector <b>Schmitz</b>, figlio di un commerciante ebreo di origine tedesca, nasce nella <b>Trieste</b> austriaca, crocevia di culture: lo pseudonimo «Italo Svevo» unisce l'anima italiana e quella tedesca. Studia in Germania, lavora per vent'anni come impiegato di banca. I primi romanzi, <b>Una vita</b> (1892) e <b>Senilità</b> (1898), passano inosservati: Svevo smette di pubblicare. Sposa Livia Veneziani ed entra nella fiorente ditta di vernici del suocero.</p><p>Due incontri sono decisivi: il giovane <b>James Joyce</b>, suo insegnante d'inglese a Trieste dal 1907, e la <b>psicoanalisi</b> di [[freud]]. Nel 1923 pubblica <b>La coscienza di Zeno</b>: lo psicanalista dottor S. pubblica «per vendetta» le memorie del suo paziente Zeno Cosini, scritte a scopo terapeutico. Il racconto non segue la cronologia ma temi (il fumo e l'«ultima sigaretta», la morte del padre, il matrimonio, l'amante, l'associazione commerciale) in un <b>tempo misto</b> della memoria; il narratore è <b>inattendibile</b>. Il «caso Svevo» esplode nel 1925-26 grazie a Joyce, ai critici francesi e a un articolo di Montale. Muore nel 1928 per un incidente d'auto.</p><p>Il protagonista dei suoi romanzi è l'<b>inetto</b>, incapace di vivere e di agire; ma alla fine di <i>Zeno</i> la «malattia» si rivela uno sguardo più lucido della «salute» di chi è perfettamente adattato.</p>`,
+  w:[["1892","Una vita","Alfonso Nitti"],["1898","Senilità","Emilio Brentani"],["1923","La coscienza di Zeno","Zeno Cosini"]],
+  x:["inetto","malattia e salute","psicoanalisi","tempo misto","ironia","narratore inattendibile","Trieste mitteleuropea"],
+  q:["La vita attuale è inquinata alle radici","La coscienza di Zeno, cap. VIII"],rel:["joyce","freud","pirandello"]},
+ {id:"dannunzio",n:"Gabriele D'Annunzio",a:1863,b:1938,big:1,per:["ip-dec"],d:"Pescara 1863 – Gardone Riviera 1938",sub:"Il Vate: estetismo, superomismo, panismo",
+  t:`<p>Esordisce a sedici anni con <i>Primo vere</i> (1879), costruendosi abilmente un caso mediatico. Nel 1881 è a <b>Roma</b>: giornalista mondano, dandy, protagonista di amori scandalosi. Ne nasce <b>Il piacere</b> (1889), il romanzo dell'<b>estetismo</b>: Andrea Sperelli fa «la propria vita come si fa un'opera d'arte», ma ne esce svuotato.</p><p>Dopo una breve fase «della bontà» (<i>L'innocente</i>, <i>Poema paradisiaco</i>), scopre [[nietzsche]] e lo interpreta a modo suo: nascono i romanzi del <b>superuomo</b> (<i>Il trionfo della morte</i>, <i>Le vergini delle rocce</i>, <i>Il fuoco</i>, ispirato alla relazione con Eleonora Duse), un eroe eccezionale destinato a dominare la massa. Il progetto delle <b>Laudi</b> culmina in <b>Alcyone</b> (1903), il diario di un'estate in Versilia: la fusione dell'io con la natura (<b>panismo</b>) in una musica verbale straordinaria (<i>La pioggia nel pineto</i>, <i>La sera fiesolana</i>, <i>Meriggio</i>).</p><p>La vita come spettacolo: debiti e fuga in Francia (1910), interventismo (1915), imprese di guerra (la beffa di Buccari, il <b>volo su Vienna</b>, 1918), occupazione di <b>Fiume</b> (1919-20). Ferito a un occhio, scrive al buio il <i>Notturno</i>. Gli ultimi anni li passa nel <b>Vittoriale</b> sul Garda.</p>`,
+  w:[["1879","Primo vere","esordio poetico"],["1889","Il piacere","romanzo dell'estetismo"],["1894-95","Il trionfo della morte · Le vergini delle rocce","romanzi del superuomo"],["1903","Alcyone","terzo libro delle Laudi"],["1904","La figlia di Iorio","tragedia"],["1916-21","Notturno","prosa memoriale"]],
+  x:["estetismo","superomismo","panismo","musicalità","vita come opera d'arte","divismo","il Vate"],
+  q:["Taci. Su le soglie / del bosco non odo / parole che dici / umane","La pioggia nel pineto, vv. 1-4"],rel:["pascoli","nietzsche","carducci"]},
+ {id:"croce",n:"Benedetto Croce",a:1866,b:1952,per:["ip-nov"],d:"Pescasseroli 1866 – Napoli 1952",sub:"Il filosofo dell'idealismo e dell'estetica",
+  t:`<p>Il più influente intellettuale italiano del primo Novecento. Nell'<i>Estetica</i> (1902) definisce l'arte «intuizione lirica»; con la rivista «La Critica» (1903) rinnova gli studi letterari. Distingue in ogni opera tra «poesia» e «non poesia». Più tardi sarà una voce dell'antifascismo liberale.</p>`},
+ {id:"pirandello",n:"Luigi Pirandello",a:1867,b:1936,big:1,per:["ip-nov"],d:"Girgenti (Agrigento) 1867 – Roma 1936",sub:"Il drammaturgo della maschera e del relativismo",
+  t:`<p>Nasce nella villa del <b>Caos</b>, presso Girgenti («figlio del Caos», dirà). Studia a Palermo e Roma e si laurea a Bonn in filologia romanza. Vive a <b>Roma</b>, insegnante al Magistero. Nel 1903 l'allagamento della miniera di zolfo in cui erano investiti i beni di famiglia lo rovina e scatena la malattia mentale della moglie Antonietta, gelosa fino al delirio: la vita stessa gli appare una «trappola».</p><p>Nel saggio <b>L'umorismo</b> (1908) distingue il comico, «avvertimento del contrario», dall'umorismo, «<b>sentimento del contrario</b>» (l'esempio della vecchia signora imbellettata): si ride, ma poi si riflette e si prova pietà. La vita è un flusso continuo che le convenzioni sociali bloccano in <b>«forme»</b> e <b>«maschere»</b>; l'io si frantuma in tante identità quante sono le persone che ci guardano.</p><p>Romanzi: <b>Il fu Mattia Pascal</b> (1904), l'uomo che, creduto morto, tenta di vivere un'altra vita e scopre di non poter esistere fuori dalla forma; <b>Uno, nessuno e centomila</b> (1926). Le <i>Novelle per un anno</i> (<i>Ciàula scopre la luna</i>, <i>Il treno ha fischiato</i>). Nel teatro rivoluziona la scena europea: <i>Così è (se vi pare)</i> (1917), <i>Enrico IV</i> (1922) e il «teatro nel teatro» dei <b>Sei personaggi in cerca d'autore</b>, fischiati alla prima al Teatro Valle di Roma nel 1921 («Manicomio!»). Premio Nobel nel 1934.</p>`,
+  w:[["1904","Il fu Mattia Pascal","romanzo"],["1908","L'umorismo","saggio di poetica"],["1922-37","Novelle per un anno","Ciàula, Il treno ha fischiato"],["1917","Così è (se vi pare)","teatro"],["1921","Sei personaggi in cerca d'autore","metateatro"],["1922","Enrico IV","teatro"],["1926","Uno, nessuno e centomila","romanzo"]],
+  x:["vita e forma","maschera","sentimento del contrario","relativismo","crisi dell'io","trappola","metateatro"],
+  q:["Una delle poche cose, anzi forse la sola ch'io sapessi di certo era questa: che mi chiamavo Mattia Pascal","Il fu Mattia Pascal, cap. I"],rel:["svevo","verga","capuana"]},
+ {id:"deledda",n:"Grazia Deledda",a:1871,b:1936,per:["ip-ver","ip-dec"],d:"Nuoro 1871 – Roma 1936",sub:"Unica italiana Nobel per la letteratura",
+  t:`<p>Autodidatta, porta nella letteratura la <b>Sardegna</b> arcaica, con le sue leggi, le colpe e i destini ineluttabili. Capolavoro: <b>Canne al vento</b> (1913). Nel 1926 riceve il Premio Nobel, ancora oggi l'unica scrittrice italiana premiata.</p>`},
+ {id:"marinetti",n:"Filippo Tommaso Marinetti",a:1876,b:1944,per:["ip-fut"],d:"Alessandria d'Egitto 1876 – Bellagio 1944",sub:"Il fondatore del Futurismo",
+  t:`<p>Poeta e straordinario organizzatore culturale, lancia il Futurismo con il <b>Manifesto</b> pubblicato su «Le Figaro» (1909) e lo diffonde con serate-spettacolo provocatorie. Teorizza le «parole in libertà» (<i>Manifesto tecnico della letteratura futurista</i>, 1912) e le applica in <i>Zang Tumb Tumb</i> (1914), sulla battaglia di Adrianopoli. Interventista, poi vicino al fascismo.</p>`,
+  q:["Noi vogliamo cantare l'amor del pericolo, l'abitudine all'energia e alla temerità","Manifesto del Futurismo, 1909"]},
+ {id:"gozzano",n:"Guido Gozzano",a:1883,b:1916,per:["ip-crep"],d:"Torino 1883 – Torino 1916",sub:"Il maggiore dei crepuscolari",
+  t:`<p>Malato di tisi, muore a 32 anni. Nei <b>Colloqui</b> (1911) guarda con ironia e nostalgia a un mondo piccolo-borghese e provinciale: <i>La signorina Felicita ovvero la Felicità</i>, <i>L'amica di nonna Speranza</i>, con le sue «buone cose di pessimo gusto». Dialoga ironicamente con D'Annunzio, rifiutandone la retorica.</p>`},
+ {id:"saba",n:"Umberto Saba",a:1883,b:1957,per:["ip-nov"],d:"Trieste 1883 – Gorizia 1957",sub:"Il poeta della «poesia onesta»",
+  t:`<p>Triestino come Svevo, libraio antiquario. Nel 1911 scrive <i>Quello che resta da fare ai poeti</i>: serve una «poesia onesta», chiara, fedele alla vita quotidiana. Il suo <b>Canzoniere</b>, cresciuto per tutta la vita, è un'autobiografia in versi (<i>A mia moglie</i>, <i>La capra</i>, <i>Trieste</i>).</p>`},
+ {id:"palazzeschi",n:"Aldo Palazzeschi",a:1885,b:1974,per:["ip-crep","ip-fut"],d:"Firenze 1885 – Roma 1974",sub:"Il poeta «saltimbanco»",
+  t:`<p>Tra crepuscolarismo e futurismo, gioca con la poesia: in <i>E lasciatemi divertire!</i> (1910) il poeta è un saltimbanco che si diverte con sillabe e suoni; in <i>Chi sono?</i> si definisce «il saltimbanco dell'anima mia». Il romanzo <i>Il codice di Perelà</i> (1911) è una favola sull'uomo di fumo.</p>`},
+ {id:"campana",n:"Dino Campana",a:1885,b:1932,per:["ip-nov"],d:"Marradi 1885 – Castel Pulci 1932",sub:"Il poeta visionario dei Canti orfici",
+  t:`<p>Vagabondo, più volte internato, vive una vita da «poeta maledetto». I <b>Canti orfici</b> (1914), stampati a proprie spese, sono un poema visionario in versi e prosa, di intensità musicale e allucinata. Muore in manicomio.</p>`},
+ {id:"corazzini",n:"Sergio Corazzini",a:1886,b:1907,per:["ip-crep"],d:"Roma 1886 – Roma 1907",sub:"Il crepuscolare romano",
+  t:`<p>Romano, muore di tisi a ventun anni. Nella <b>Desolazione del povero poeta sentimentale</b> rifiuta perfino il nome di poeta: «Io non sono un poeta. / Io non sono che un piccolo fanciullo che piange».</p>`,
+  q:["Perché tu mi dici: poeta? / Io non sono un poeta","Desolazione del povero poeta sentimentale"]},
+ {id:"ungaretti",n:"Giuseppe Ungaretti",a:1888,b:1970,per:["ip-nov"],d:"Alessandria d'Egitto 1888 – Milano 1970",sub:"Il poeta della trincea e della parola essenziale",
+  t:`<p>Volontario nella Grande Guerra sul Carso, scrive in trincea le poesie del <b>Porto sepolto</b> (1916), poi confluite nell'<i>Allegria</i>: versi brevissimi, parole isolate nel bianco della pagina, senza punteggiatura (<i>Veglia</i>, <i>Fratelli</i>, <i>San Martino del Carso</i>, <i>Mattina</i>). Inizia qui la poesia del Novecento, che studierete l'anno prossimo.</p>`}
+];
+
+
+/* -------- Periodizzazione storica europea (primo livello + articolazioni) -------- */
+const HEU = [
+ {id:"eu-med",n:"Medioevo maturo",a:1180,b:1300,c:"#2b4762",t:`<p>L'Europa delle due autorità universali, <b>Papato e Impero</b>, e delle monarchie feudali che si rafforzano (Francia, Inghilterra). È l'età delle crociate, delle cattedrali gotiche, delle università (Bologna, Parigi, Oxford) e degli ordini mendicanti. Tommaso d'Aquino concilia fede e filosofia aristotelica nella <i>Summa theologiae</i>.</p>`},
+ {id:"eu-cri",n:"Crisi del Trecento",a:1300,b:1417,c:"#3d4870",t:`<p>Carestie e la <b>Peste nera</b> (1347-51) dimezzano in molte zone la popolazione. Il papato si trasferisce ad Avignone e poi si spacca nello Scisma d'Occidente; Francia e Inghilterra combattono la Guerra dei Cent'anni. Il Concilio di Costanza (1414-18) ricompone l'unità della Chiesa.</p>`},
+ {id:"eu-ver",n:"Verso l'età moderna",a:1417,b:1492,c:"#33597d",t:`<p>Si consolidano le monarchie nazionali (Francia, Inghilterra, Spagna dei Re Cattolici). Costantinopoli cade in mano ai Turchi (1453), la stampa a caratteri mobili moltiplica i libri. L'Umanesimo italiano diventa il modello culturale d'Europa.</p>`},
+ {id:"eu-rif",n:"Scoperte e Riforma",a:1492,b:1555,c:"#2a5174",t:`<p>Le scoperte geografiche spostano il centro del mondo sull'Atlantico; Lutero spezza l'unità religiosa dell'Occidente; Carlo V sogna un impero universale cristiano. Si chiude con la Pace di Augsburg (1555): «cuius regio, eius religio».</p>`,
+  kids:[{id:"eu-rif1",n:"Scoperte geografiche",a:1492,b:1522,c:"#3b6a92",t:`<p>Da Colombo (1492) a Vasco da Gama (1498), fino alla circumnavigazione del globo di Magellano ed Elcano (1519-22): nascono gli imperi coloniali di Spagna e Portogallo.</p>`},
+        {id:"eu-rif2",n:"Riforma e impero di Carlo V",a:1517,b:1555,c:"#1f405e",t:`<p>Dalle 95 tesi di Lutero (1517) alla diffusione del calvinismo e alla separazione della Chiesa d'Inghilterra (1534). Carlo V non riesce a ricomporre l'unità religiosa e abdica nel 1556.</p>`}]},
+ {id:"eu-rel",n:"Guerre di religione",a:1555,b:1648,c:"#1d4566",t:`<p>Cattolici e protestanti si combattono in Francia (notte di San Bartolomeo, 1572), nei Paesi Bassi, nell'Impero. La Chiesa si rinnova con il Concilio di Trento; la Spagna di Filippo II è la grande potenza cattolica. La Guerra dei Trent'anni (1618-48) chiude l'epoca con la Pace di Vestfalia.</p>`},
+ {id:"eu-ass",n:"Età dell'Assolutismo",a:1648,b:1715,c:"#2c5a80",t:`<p>È l'età di Luigi XIV, il «Re Sole», e della reggia di Versailles: il sovrano concentra ogni potere. In Inghilterra, invece, la Gloriosa rivoluzione (1688) fonda la monarchia costituzionale. La rivoluzione scientifica culmina con Newton.</p>`},
+ {id:"eu-lumi",n:"Età dei Lumi",a:1715,b:1789,c:"#3a6a92",t:`<p>La ragione diventa criterio di giudizio di tutto: politica, religione, giustizia. Sovrani «illuminati» (Federico II di Prussia, Maria Teresa e Giuseppe II d'Austria, Caterina II di Russia) avviano riforme. In Inghilterra parte la rivoluzione industriale; dall'America arriva la prima rivoluzione moderna (1776).</p>`},
+ {id:"eu-riv",n:"Età delle rivoluzioni",a:1789,b:1815,c:"#8b2a3c",t:`<p>La Rivoluzione francese abbatte l'Antico regime e proclama i diritti dell'uomo e del cittadino; Napoleone ne esporta in tutta Europa i codici e le istituzioni, finché la coalizione delle potenze lo sconfigge a Waterloo.</p>`,
+  kids:[{id:"eu-riv1",n:"Rivoluzione francese",a:1789,b:1799,c:"#b03d55",t:`<p>Dalla presa della Bastiglia alla monarchia costituzionale, alla Repubblica (1792), al Terrore di Robespierre, al Direttorio.</p>`},
+        {id:"eu-riv2",n:"Età napoleonica",a:1799,b:1815,c:"#6f2030",t:`<p>Dal colpo di Stato del 18 brumaio all'Impero (1804), all'egemonia continentale, alla campagna di Russia (1812) e a Waterloo (1815).</p>`}]},
+ {id:"eu-rest",n:"Restaurazione e nazioni",a:1815,b:1871,c:"#2f6b5e",t:`<p>Il Congresso di Vienna restaura i sovrani legittimi, ma liberalismo e idea di nazione alimentano rivoluzioni continue (1820-21, 1830-31, 1848). Si chiude con l'unificazione italiana e tedesca.</p>`,
+  kids:[{id:"eu-rest1",n:"Restaurazione",a:1815,b:1848,c:"#3c8574",t:`<p>L'ordine di Metternich e della Santa Alleanza, contestato dai moti liberali e dalle società segrete.</p>`},
+        {id:"eu-rest2",n:"Le unificazioni nazionali",a:1848,b:1871,c:"#24554a",t:`<p>Dalla «primavera dei popoli» del 1848 alla nascita del Regno d'Italia (1861) e dell'Impero tedesco (1871).</p>`}]},
+ {id:"eu-imp",n:"Imperialismo e Grande Guerra",a:1871,b:1925,c:"#5a3d6b",t:`<p>Seconda rivoluzione industriale, società di massa, partiti e sindacati; le potenze europee si spartiscono Africa e Asia. Le rivalità nazionali sfociano nella Prima guerra mondiale, da cui escono la rivoluzione russa e un'Europa ridisegnata.</p>`,
+  kids:[{id:"eu-imp1",n:"Belle Époque e imperialismo",a:1871,b:1914,c:"#6e4d82",t:`<p>Fiducia nel progresso, esposizioni universali, elettricità, automobile; ma anche corsa agli armamenti e colonialismo.</p>`},
+        {id:"eu-imp2",n:"Prima guerra mondiale",a:1914,b:1918,c:"#5c2b2b",t:`<p>La prima guerra totale e industriale: trincee, gas, milioni di morti.</p>`},
+        {id:"eu-imp3",n:"Dopoguerra",a:1918,b:1925,c:"#4a3657",t:`<p>Trattati di Versailles, crollo degli imperi, crisi economica, nascita dei totalitarismi.</p>`}]}
+];
+
+/* -------- Periodizzazione storica italiana -------- */
+const HITP = [
+ {id:"h-com",n:"Età dei Comuni",a:1180,b:1300,c:"#1e5a46",t:`<p>Le città dell'Italia centro-settentrionale si governano da sé: i Comuni, retti da consoli e poi da podestà e capitani del popolo, sono dilaniati dalle lotte tra <b>guelfi</b> (filopapali) e <b>ghibellini</b> (filoimperiali). Al Sud regna la monarchia normanno-sveva, poi angioina. È il mondo della Scuola siciliana, dello Stilnovo e di Dante.</p>`,
+  kids:[{id:"h-com1",n:"Comuni e Impero svevo",a:1180,b:1266,c:"#2b7a5f",t:`<p>Dopo il Barbarossa, Federico II tenta di sottomettere Comuni e Papato; la dinastia sveva cade con la morte di Manfredi a Benevento (1266).</p>`},
+        {id:"h-com2",n:"Angioini e lotte di fazione",a:1266,b:1300,c:"#17493a",t:`<p>Carlo d'Angiò regna al Sud (fino ai Vespri del 1282 in Sicilia); a Firenze trionfano i guelfi, che poi si dividono in Bianchi e Neri.</p>`}]},
+ {id:"h-sig",n:"Signorie e Principati",a:1300,b:1454,c:"#246b55",t:`<p>Nei Comuni il potere passa a una sola famiglia: nascono le <b>Signorie</b> (Visconti a Milano, Este a Ferrara, Gonzaga a Mantova, Scaligeri a Verona, Medici a Firenze), poi legittimate come Principati. Le corti diventano i nuovi centri della cultura.</p>`,
+  kids:[{id:"h-sig1",n:"Crisi del Trecento",a:1300,b:1378,c:"#2f8068",t:`<p>Il papato ad Avignone, la peste del 1348, il fallimento delle grandi banche fiorentine (Bardi, Peruzzi).</p>`},
+        {id:"h-sig2",n:"Dalle Signorie ai Principati",a:1378,b:1454,c:"#1b5543",t:`<p>Dal tumulto dei Ciompi (1378) all'espansione di Milano e Venezia e all'ascesa dei Medici a Firenze (1434).</p>`}]},
+ {id:"h-lodi",n:"Equilibrio italiano",a:1454,b:1494,c:"#2f7a62",t:`<p>Con la Pace di Lodi (1454) i cinque Stati maggiori (Milano, Venezia, Firenze, Stato della Chiesa, Napoli) trovano un equilibrio che regge per quarant'anni, garantito dalla diplomazia di Lorenzo il Magnifico. È la stagione d'oro dell'Umanesimo.</p>`},
+ {id:"h-guer",n:"Guerre d'Italia",a:1494,b:1559,c:"#1e6b52",t:`<p>La discesa di Carlo VIII (1494) apre sessant'anni di guerre tra Francia e Spagna-Impero per il controllo della penisola; Roma è saccheggiata nel 1527. Machiavelli e Guicciardini riflettono su questa crisi. La pace di Cateau-Cambrésis (1559) consegna l'Italia all'egemonia spagnola.</p>`,
+  kids:[{id:"h-guer1",n:"Le calate francesi",a:1494,b:1516,c:"#2a8466",t:`<p>Carlo VIII, Luigi XII, la Lega di Cambrai contro Venezia, la battaglia di Marignano (1515).</p>`},
+        {id:"h-guer2",n:"Francia contro Asburgo",a:1516,b:1559,c:"#174f3d",t:`<p>Lo scontro tra Francesco I e Carlo V: Pavia (1525), il Sacco di Roma (1527), l'assedio di Firenze (1530).</p>`}]},
+ {id:"h-spa",n:"Preponderanza spagnola",a:1559,b:1713,c:"#1a5a45",t:`<p>Gran parte d'Italia è governata direttamente (Milano, Napoli, Sicilia, Sardegna) o indirettamente dalla Spagna. La Chiesa della Controriforma controlla la cultura con l'Indice e l'Inquisizione: è il clima di Tasso, Bruno, Campanella, Galileo. Il Seicento è un secolo di crisi economica e di rivolte (Masaniello, 1647).</p>`,
+  kids:[{id:"h-spa1",n:"L'Italia della Controriforma",a:1559,b:1600,c:"#277a60",t:`<p>Applicazione dei decreti di Trento, Indice dei libri proibiti, nuovi ordini religiosi (Gesuiti), roghi di eretici: Giordano Bruno muore nel 1600.</p>`},
+        {id:"h-spa2",n:"La crisi del Seicento",a:1600,b:1713,c:"#13473a",t:`<p>Peste (1630 a Milano, quella dei <i>Promessi sposi</i>), declino economico, rivolta di Masaniello a Napoli (1647). Fino alla Guerra di successione spagnola.</p>`}]},
+ {id:"h-rif",n:"Età delle riforme",a:1713,b:1796,c:"#2a7058",t:`<p>Dopo le guerre di successione l'Austria sostituisce la Spagna in Lombardia; i Borbone regnano a Napoli. Maria Teresa e Giuseppe II a Milano, Pietro Leopoldo in Toscana, Tanucci a Napoli realizzano riforme ispirate ai Lumi, sostenute da intellettuali come Verri e Beccaria.</p>`},
+ {id:"h-rivn",n:"Età napoleonica",a:1796,b:1815,c:"#8b2a3c",t:`<p>Con la Campagna d'Italia (1796) Napoleone porta nella penisola repubbliche «giacobine», codici moderni e speranze di indipendenza, presto deluse (Campoformio, 1797). Nasce il Regno d'Italia (1805), con capitale Milano. È la stagione di Foscolo e del Neoclassicismo.</p>`,
+  kids:[{id:"h-rivn1",n:"Triennio giacobino",a:1796,b:1799,c:"#a8384d",t:`<p>Repubbliche Cispadana, Cisalpina, Romana, Napoletana: quest'ultima cade nel sangue nel 1799 (Eleonora Pimentel Fonseca).</p>`},
+        {id:"h-rivn2",n:"L'Italia napoleonica",a:1800,b:1815,c:"#6f2030",t:`<p>Repubblica e poi Regno d'Italia, Regno di Napoli di Giuseppe Bonaparte e Murat: amministrazione moderna, Codice civile, coscrizione obbligatoria.</p>`}]},
+ {id:"h-ris",n:"Restaurazione e Risorgimento",a:1815,b:1861,c:"#1e6b52",t:`<p>Il Congresso di Vienna restaura i vecchi sovrani; l'Italia è, per Metternich, «un'espressione geografica». Ma moti carbonari, la Giovine Italia di Mazzini, il 1848 e la politica di Cavour portano all'Unità. Il Romanticismo italiano è anche impegno patriottico.</p>`,
+  kids:[{id:"h-ris1",n:"Moti e Giovine Italia",a:1815,b:1847,c:"#2c8a6a",t:`<p>Moti del 1820-21 e del 1831, fondazione della Giovine Italia (1831), dibattito tra mazziniani, neoguelfi (Gioberti) e moderati.</p>`},
+        {id:"h-ris2",n:"Le guerre d'indipendenza",a:1848,b:1861,c:"#15503d",t:`<p>Prima guerra (1848-49), Repubblica Romana, Seconda guerra (1859) con l'alleanza francese, Spedizione dei Mille (1860), proclamazione del Regno (1861).</p>`}]},
+ {id:"h-unita",n:"Italia liberale",a:1861,b:1900,c:"#24805f",t:`<p>Il nuovo Regno affronta analfabetismo, brigantaggio, questione meridionale, pareggio di bilancio. Nel 1866 si annette il Veneto, nel 1870 Roma. Alla Destra storica succede la Sinistra di Depretis e Crispi; parte l'emigrazione di massa. In letteratura: Scapigliatura, Carducci, Verismo.</p>`,
+  kids:[{id:"h-unita1",n:"Destra storica",a:1861,b:1876,c:"#30997a",t:`<p>Accentramento amministrativo, tassa sul macinato, lotta al brigantaggio, Terza guerra d'indipendenza, Roma capitale, pareggio del bilancio (1876).</p>`},
+        {id:"h-unita2",n:"Sinistra storica e Crispi",a:1876,b:1896,c:"#1f6b52",t:`<p>Depretis e il trasformismo, la legge Coppino sull'istruzione obbligatoria (1877), la Triplice Alleanza, il colonialismo di Crispi fino alla sconfitta di Adua (1896).</p>`},
+        {id:"h-unita3",n:"Crisi di fine secolo",a:1896,b:1900,c:"#174d3c",t:`<p>Moti per il pane e cannonate di Bava Beccaris a Milano (1898), tentativi autoritari, assassinio di re Umberto I (1900).</p>`}]},
+ {id:"h-gio",n:"Età giolittiana e Grande Guerra",a:1900,b:1925,c:"#6b2f5c",t:`<p>Giovanni Giolitti guida un'Italia che si industrializza e allarga il voto (suffragio universale maschile, 1912). Nazionalismo e guerra di Libia (1911-12) preparano il clima interventista; nel 1915 l'Italia entra nella Prima guerra mondiale. Nel dopoguerra la crisi porta al fascismo (marcia su Roma, 1922).</p>`,
+  kids:[{id:"h-gio1",n:"Età giolittiana",a:1900,b:1914,c:"#7e3d6d",t:`<p>Decollo industriale nel triangolo Milano-Torino-Genova, riforme sociali, dialogo con socialisti riformisti e cattolici (Patto Gentiloni, 1913).</p>`},
+        {id:"h-gio2",n:"Grande Guerra",a:1915,b:1918,c:"#5c2b2b",t:`<p>Dal 24 maggio 1915 a Vittorio Veneto (novembre 1918), passando per Caporetto (1917): seicentomila caduti.</p>`},
+        {id:"h-gio3",n:"Dopoguerra e fascismo",a:1919,b:1925,c:"#4f2445",t:`<p>«Vittoria mutilata», impresa di Fiume, biennio rosso, marcia su Roma (1922), delitto Matteotti (1924).</p>`}]}
+];
+
+/* -------- Articolazioni aggiuntive -------- */
+IP.push(
+ {id:"ip-umlat",n:"Umanesimo latino",a:1375,b:1450,c:"#4a90d9",t:`<p>Nella prima metà del Quattrocento gli umanisti scrivono soprattutto in latino, imitando Cicerone: ricerca dei codici, filologia, trattati e dialoghi morali, Umanesimo «civile» fiorentino ([[salutati]], [[bruni]], [[poggio]], [[valla]], [[alberti]]).</p>`},
+ {id:"ip-umvol",n:"Umanesimo volgare",a:1450,b:1494,c:"#1f6fbf",t:`<p>Dalla seconda metà del secolo il volgare torna a essere lingua letteraria, nobilitato dalla cultura classica: a Firenze con [[lorenzo]], [[poliziano]] e [[pulci]], a Ferrara con [[boiardo]], a Napoli con [[sannazaro]].</p>`}
+);
+const LEU_WRAP = [
+ {id:"le-bar",n:"Barocco e Classicismo",a:1600,b:1690,c:"#8a4fa8",t:`<p>Il Seicento europeo oscilla fra due poli: la meraviglia, il contrasto e la teatralità del <b>Barocco</b> (Spagna, Inghilterra elisabettiana, Italia) e l'ordine, la chiarezza e la regola del <b>Classicismo</b> francese di Luigi XIV.</p>`},
+ {id:"le-lumi",n:"L'età dei Lumi",a:1690,b:1798,c:"#d9a52c",t:`<p>Il Settecento della ragione critica e delle riforme, ma anche delle prime inquietudini sentimentali: accanto all'<b>Illuminismo</b> maturano il <b>Neoclassicismo</b> e il <b>Preromanticismo</b>.</p>`},
+ {id:"le-real",n:"Realismo, Naturalismo, Simbolismo",a:1848,b:1905,c:"#7a6248",t:`<p>La seconda metà dell'Ottocento è dominata dal romanzo che vuole rappresentare il vero (<b>Realismo</b>, poi <b>Naturalismo</b> «scientifico»), mentre la poesia, con Baudelaire e i <b>Simbolisti</b>, apre la strada al <b>Decadentismo</b>.</p>`}
+];
+
+/* =====================================================================
+   MOTORE — quattro fasce a «scatole cinesi»
+   Livello 0: i periodi di ogni fascia e le sole figure cardine.
+   Clic su un periodo: si apre sul posto una scatola con la sua
+   periodizzazione interna e tutti i suoi protagonisti.
+   ===================================================================== */
+const START = 1180, END = 1925;
+const EPx = id => EP.find(p => p.id === id), IPx = id => IP.find(p => p.id === id);
+const LEU = [EPx("e-cort"), EPx("e-tard"), EPx("e-rin"), LEU_WRAP[0], LEU_WRAP[1], EPx("e-rom"), LEU_WRAP[2], EPx("e-avg")];
+const LIT = IP.filter(p => p.main).sort((a,b) => a.a - b.a);
+const KIDS = {
+  "ip-orig":["ip-rel","ip-sic","ip-sto","ip-com","ip-stil"], "ip-uma":["ip-umlat","ip-umvol"], "ip-neo":["ip-prer"],
+  "ip-post":["ip-scap","ip-ver"], "ip-nov":["ip-crep","ip-fut"],
+  "le-bar":["e-bar","e-clfr"], "le-lumi":["e-ill","e-prer","e-neo"], "le-real":["e-real","e-nat","e-dec"]
+};
+const ROWS = [
+ {id:"he",label:"Storia europea",sub:"e mondiale",periods:HEU,members:HEV,g:"#2c4a68"},
+ {id:"hi",label:"Storia d'Italia",sub:"stati, protagonisti, eventi",periods:HITP,members:HIT,g:"#1e6b52"},
+ {id:"le",label:"Letteratura europea",sub:"movimenti e grandi autori",periods:LEU,members:EAU,g:"#7b4fa0"},
+ {id:"li",label:"Letteratura italiana",sub:"periodi, correnti, autori",periods:LIT,members:IAU,g:"#c0392b"}
+];
+const ROWNAME = {macro:"Grandi età della storia",he:"Storia europea e mondiale",hi:"Storia d'Italia",le:"Letteratura europea",li:"Letteratura italiana"};
+
+/* figure cardine del livello 0, con anno di riferimento (fl) e nome breve */
+const CARD = {
+  dante:[1307,"Dante"], petrarca:[1342,"Petrarca"], boccaccio:[1350,"Boccaccio"], machiavelli:[1513,"Machiavelli"],
+  ariosto:[1520,"Ariosto"], tasso:[1575,"Tasso"], galileo:[1632,"Galileo"], goldoni:[1750,"Goldoni"], parini:[1763,"Parini"],
+  alfieri:[1782,"Alfieri"], foscolo:[1802,"Foscolo"], leopardi:[1819,"Leopardi"], manzoni:[1827,"Manzoni"],
+  carducci:[1870,"Carducci"], verga:[1881,"Verga"], dannunzio:[1889,"D'Annunzio"], pascoli:[1897,"Pascoli"],
+  pirandello:[1904,"Pirandello"], svevo:[1923,"Svevo"],
+  cervantes:[1605,"Cervantes"], shakespeare:[1594,"Shakespeare"], voltaire:[1759,"Voltaire"], goethe:[1774,"Goethe"],
+  baudelaire:[1857,"Baudelaire"], zola:[1880,"Zola"],
+  america:[1492,"Scoperta dell'America"], lutero:[1517,"Riforma protestante"], rivfr:[1789,"Rivoluzione francese"],
+  napoleone:[1804,"Napoleone"], ww1:[1914,"Grande Guerra"], peste:[1348,"Peste nera"],
+  federico2:[1220,"Federico II"], lodi:[1454,"Pace di Lodi"], sacco:[1527,"Sacco di Roma"], mazzini:[1831,"Mazzini"],
+  cavour:[1852,"Cavour"], garibaldi:[1860,"Garibaldi"], portapia:[1870,"Roma capitale"]
+};
+/* anni di riferimento per collocare i personaggi storici nel periodo giusto */
+const FL = {bonifacio:1294, cola:1347, cosimo:1434, colombo:1492, savonarola:1494, leonardo:1490, michelangelo:1508,
+  marcopolo:1295, carlo5:1519, luigi14:1661, leopoldo:1770, ve2:1861, giolitti:1903, borgia:1500};
+
+const BY = {}, PARENT = {};
+MACRO.forEach(e => { e.row = "macro"; e.lvl = 1; BY[e.id] = e; });
+for (const r of ROWS){
+  for (const p of r.periods){
+    p.row = r.id; p.lvl = 1; BY[p.id] = p;
+    p.kidsList = p.kids || (KIDS[p.id] || []).map(id => EPx(id) || IPx(id));
+    for (const k of p.kidsList){ k.row = r.id; k.lvl = 2; BY[k.id] = k; PARENT[k.id] = p.id; }
+  }
+  for (const m of r.members){ m.row = r.id; BY[m.id] = m; }
+}
+const ALL = Object.values(BY);
+const flOf = e => CARD[e.id] ? CARD[e.id][0] : FL[e.id] ?? (e.k === "e" ? e.a : Math.min(e.b ?? e.a, e.a + 30));
+for (const r of ROWS) for (const m of r.members){
+  if (m.per && m.per.length){ const p = m.per[m.per.length-1]; m.root = PARENT[p] || p; }
+  else { const y = flOf(m); m.root = (r.periods.find(p => p.a <= y && y < p.b) || r.periods[r.periods.length-1]).id; }
+}
+
+const $ = s => document.querySelector(s);
+const vp = $("#vp"), cv = $("#cv"), cursorEl = $("#cursor");
+let PPY = innerWidth < 700 ? 6 : 8.5;
+const open = new Set();
+const labw = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--labw"));
+const X = y => labw() + 24 + (y - START) * PPY;
+
+const mctx = document.createElement("canvas").getContext("2d");
+function tw(s, w = 600, size = 12.5){ mctx.font = `${w} ${size}px 'Titillium Web'`; return mctx.measureText(s).width; }
+function hex2rgb(h){ h = h.replace("#",""); return [0,2,4].map(i => parseInt(h.substr(i,2),16)/255); }
+function textOn(h){ const [r,g,b] = hex2rgb(h).map(c => c <= .03928 ? c/12.92 : Math.pow((c+.055)/1.055,2.4)); return .2126*r+.7152*g+.0722*b > .36 ? "#1d2733" : "#ffffff"; }
+function colorOf(e){
+  if (typeof e.c === "string") return e.c;
+  if (e.per && e.per.length) return BY[e.per[e.per.length-1]].c;
+  if (e.row === "he") return e.k === "e" ? "#6a5a8c" : "#455b71";
+  if (e.row === "hi") return e.k === "e" ? "#b03a2e" : "#1e6b52";
+  return "#51758d";
+}
+const roman = n => ["","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX"][n];
+
+/* assegna corsie: ogni elemento ha x0..x1 */
+function lanes(list, gap){
+  const ends = [];
+  for (const g of list){
+    let l = ends.findIndex(e => e + gap <= g.x0);
+    if (l < 0){ l = ends.length; ends.push(-1e9); }
+    ends[l] = g.x1; g.lane = l;
+  }
+  return ends.length;
+}
+function el(cls, html, css){ const d = document.createElement("div"); d.className = cls; if (html != null) d.innerHTML = html; if (css) d.style.cssText = css; return d; }
+function paint(d, col){ d.style.setProperty("--c", col); d.style.setProperty("--tc", textOn(col)); }
+
+/* geometria di una voce dentro la scatola del periodo P (vita tagliata ai bordi del periodo) */
+function geom(e, P){
+  const big = !!e.big;
+  if (e.b == null || e.b === e.a){
+    const x = X(e.a); return {e, pt:1, x, x0:x - 9, x1:x + 22 + tw(e.n)};
+  }
+  const a = Math.max(e.a, P.a), b = Math.min(e.b, P.b);
+  const x = X(a), w = Math.max(30, X(b) - x);
+  const lw = tw((big ? "★ " : "") + e.n, big ? 700 : 600, big ? 13.5 : 12.5) + 20;
+  const out = lw > w;
+  return {e, x, w, out, cl: e.a < P.a, cr: e.b > P.b, x0:x, x1: x + (out ? w + lw - 6 : w)};
+}
+
+function render(){
+  const W = X(END) + 80;
+  cv.innerHTML = ""; cv.style.width = W + "px";
+  // righello con le grandi età
+  const ru = el("ruler", `<div class="corner">Anno</div>`); ru.style.width = W + "px";
+  for (const e of MACRO){
+    const d = el("era", `<span>${e.n}</span>`, `left:${X(e.a)}px;width:${X(e.b) - X(e.a)}px;background:${e.c}`);
+    d.dataset.id = e.id; ru.appendChild(d);
+  }
+  const step = PPY >= 7 ? 10 : 25;
+  for (let y = Math.ceil(START/step)*step; y <= END; y += step){
+    ru.appendChild(el("tick " + (y % 100 === 0 ? "t100" : y % 50 === 0 ? "t50" : "t10"), null, `left:${X(y)}px`));
+    if (y % 100 === 0) ru.appendChild(el("clab", `${roman(y/100 + 1)} secolo<small>${y}</small>`, `left:${X(y)}px`));
+    else if (y % 50 === 0 || (PPY >= 14 && y % 10 === 0) || (PPY >= 8 && y % 25 === 0)) ru.appendChild(el("tlab", y, `left:${X(y)}px`));
+  }
+  cv.appendChild(ru);
+
+  for (const r of ROWS){
+    const row = el("row"); row.style.setProperty("--g", r.g);
+    const anyOpen = r.periods.some(p => open.has(p.id));
+    row.innerHTML = `<div class="rowlab"><b>${r.label}</b><small>${r.sub}</small><button class="rl-btn" data-rowtoggle="${r.id}">${anyOpen ? "chiudi tutto" : "apri tutto"}</button></div>`;
+    // 1. periodi di primo livello
+    for (const p of r.periods){
+      const d = el("band l1" + (open.has(p.id) ? " open" : ""), `<span>${p.n}<i class="info" title="Scheda">i</i><i class="chev">${open.has(p.id) ? "▴" : "▾"}</i></span>`,
+        `left:${X(p.a)}px;top:8px;width:${X(p.b) - X(p.a)}px`);
+      d.dataset.id = p.id; paint(d, p.c); row.appendChild(d);
+    }
+    // 2. figure cardine (solo per i periodi chiusi)
+    const cards = r.members.filter(m => CARD[m.id] && !open.has(m.root))
+      .map(m => { const x = X(CARD[m.id][0]); return {e:m, x, x0:x - 8, x1:x + 20 + tw(CARD[m.id][1], 700, 13)}; })
+      .sort((a,b) => a.x0 - b.x0);
+    const nC = lanes(cards, 8);
+    for (const g of cards){
+      const d = el("mark" + (g.e.k === "e" ? " ev" : (g.e.row === "li" || g.e.row === "le") ? " au" : ""), `<span>${CARD[g.e.id][1]}</span>`, `left:${g.x}px;top:${46 + g.lane * 22}px`);
+      d.dataset.id = g.e.id; paint(d, colorOf(g.e)); row.appendChild(d);
+    }
+    let base = 46 + Math.max(nC, 1) * 22 + 8;
+    // 3. scatole aperte
+    const boxes = [];
+    for (const p of r.periods.filter(p => open.has(p.id))){
+      const kids = p.kidsList.map(k => {
+        const a = Math.max(k.a, p.a), b = Math.min(k.b, p.b);
+        return {e:k, x:X(a), w:Math.max(40, X(b) - X(a)), x0:X(a), x1:Math.max(X(a) + 40, X(b))};
+      }).sort((a,b) => a.x0 - b.x0);
+      const nK = lanes(kids, -1);
+      const items = r.members.filter(m => m.root === p.id).sort((a,b) => a.a - b.a || (b.big?1:0) - (a.big?1:0)).map(m => geom(m, p));
+      const nI = lanes(items, 10);
+      const x0 = X(p.a) - 8, x1 = Math.max(X(p.b) + 8, ...items.map(g => g.x1 + 8), ...kids.map(g => g.x1 + 8));
+      const h = 26 + nK * 30 + (nK ? 6 : 0) + Math.max(nI, 1) * 25 + 10;
+      boxes.push({p, kids, items, nK, x0, x1, h});
+    }
+    const nB = lanes(boxes, 12);
+    const laneH = []; boxes.forEach(b => laneH[b.lane] = Math.max(laneH[b.lane] || 0, b.h));
+    const laneTop = []; let acc = base + 6;
+    for (let i = 0; i < nB; i++){ laneTop[i] = acc; acc += laneH[i] + 14; }
+    for (const B of boxes){
+      const top = laneTop[B.lane];
+      const bx = el("box", `<div class="bh">${B.p.n} · ${B.p.a < 1200 ? "…" : B.p.a}–${B.p.b > 1920 ? "…" : B.p.b}</div>`,
+        `left:${B.x0}px;top:${top}px;width:${B.x1 - B.x0}px;height:${B.h}px;--tip:${Math.min(40, (X(B.p.b) - X(B.p.a)) / 2)}px`);
+      bx.style.setProperty("--c", B.p.c); row.appendChild(bx);
+      for (const g of B.kids){
+        const d = el("band kid", `<span>${g.e.n}</span>`, `left:${g.x}px;top:${top + 26 + g.lane * 30}px;width:${g.w}px`);
+        d.dataset.id = g.e.id; paint(d, g.e.c); row.appendChild(d);
+      }
+      const iy = top + 26 + B.nK * 30 + (B.nK ? 6 : 0);
+      for (const g of B.items){
+        const e = g.e;
+        const d = el("item" + (e.k === "e" ? " ev" : "") + (g.pt ? " pt" : "") + (e.big ? " big" : "") + (g.out ? " out" : "") + (g.cl || e.c0 ? " c0" : "") + (g.cr || e.c1 ? " c1" : ""),
+          `<span class="lb">${e.n}</span>`, `left:${g.x}px;top:${iy + g.lane * 25}px` + (g.pt ? "" : `;width:${g.w}px`));
+        d.dataset.id = e.id; paint(d, colorOf(e)); row.appendChild(d);
+      }
+    }
+    row.style.height = (nB ? acc + 4 : open.size ? base : Math.max(base, Math.floor((vp.clientHeight - 62) / 4))) + "px";
+    cv.appendChild(row);
+  }
+  // secoli
+  const H = Math.max(cv.scrollHeight, vp.clientHeight);
+  for (let y = 1200; y <= END; y += 100){
+    if ((y/100) % 2 === 0) cv.prepend(el("cband", null, `left:${X(y)}px;width:${Math.min(X(y+100), X(END)) - X(y)}px;height:${H}px`));
+    cv.prepend(el("cline", null, `left:${X(y)}px;height:${H}px`));
+  }
+  cursorEl.style.left = (labw() + (vp.clientWidth - labw()) / 2) + "px";
+  updateStatus(); drawMini();
+}
+
+/* ---------- apertura delle scatole ---------- */
+function toggle(id, force){
+  const want = force ?? !open.has(id);
+  if (want) open.add(id); else open.delete(id);
+  render();
+  if (want) revealBox(id);
+}
+function revealBox(id){
+  const b = [...cv.querySelectorAll(".box")].find(x => x.firstChild.textContent.startsWith(BY[id].n));
+  if (!b) return;
+  const top = b.offsetTop + b.parentElement.offsetTop, bottom = top + b.offsetHeight;
+  if (bottom > vp.scrollTop + vp.clientHeight) vp.scrollTo({top: Math.min(top - 120, bottom - vp.clientHeight + 16), behavior:"smooth"});
+}
+
+/* ---------- scorrimento: trackpad nativo (due dita), pizzico = zoom ---------- */
+vp.addEventListener("wheel", ev => {
+  if (ev.ctrlKey){ ev.preventDefault(); zoom(Math.exp(-ev.deltaY * (Math.abs(ev.deltaY) > 40 ? .002 : .01)), ev.clientX); return; }
+  const noV = vp.scrollHeight <= vp.clientHeight + 1;
+  if (noV && Math.abs(ev.deltaY) > Math.abs(ev.deltaX)){ ev.preventDefault(); vp.scrollLeft += ev.deltaY * (ev.deltaMode === 1 ? 30 : 1); }
+}, {passive:false});
+/* trascinamento col mouse */
+let drag = null, moved = false;
+vp.addEventListener("pointerdown", ev => {
+  if (ev.pointerType !== "mouse" || ev.button !== 0) return;
+  drag = {x: ev.clientX, y: ev.clientY, sl: vp.scrollLeft, st: vp.scrollTop}; moved = false;
+});
+addEventListener("pointermove", ev => {
+  if (!drag) return;
+  const dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+  if (!moved && Math.hypot(dx, dy) > 5){ moved = true; vp.classList.add("drag"); tip.style.opacity = 0; }
+  if (moved){ vp.scrollLeft = drag.sl - dx; vp.scrollTop = drag.st - dy; }
+});
+addEventListener("pointerup", () => { drag = null; vp.classList.remove("drag"); setTimeout(() => moved = false, 0); });
+
+function centerYear(){ return START + (vp.scrollLeft + (vp.clientWidth - labw()) / 2 - 24) / PPY; }
+function scrollToYear(y, smooth = true){ vp.scrollTo({left: X(y) - labw() - (vp.clientWidth - labw()) / 2, behavior: smooth ? "smooth" : "auto"}); }
+function zoom(f, clientX){
+  const r = vp.getBoundingClientRect();
+  const ax = clientX != null ? Math.max(labw(), clientX - r.left) : labw() + (vp.clientWidth - labw()) / 2;
+  const yr = START + (vp.scrollLeft + ax - labw() - 24) / PPY;
+  const np = Math.max(4, Math.min(32, PPY * f));
+  if (Math.abs(np - PPY) < .01) return;
+  PPY = np; render(); vp.scrollLeft = X(yr) - ax;
+}
+$("#zin").onclick = () => zoom(1.25);
+$("#zout").onclick = () => zoom(0.8);
+$("#openall").onclick = () => { if (MQ.matches){ mob.querySelectorAll(".mc:not([hidden])").forEach(c => { c.open = true; fillCard(c); }); return; } ROWS.forEach(r => r.periods.forEach(p => open.add(p.id))); render(); };
+$("#closeall").onclick = () => { if (MQ.matches){ mob.querySelectorAll("details[open]").forEach(c => c.open = false); return; } open.clear(); render(); };
+
+/* ---------- tooltip, evidenziazione, click ---------- */
+const tip = $("#tip");
+function dateLabel(e){
+  if (e.b == null || e.b === e.a) return String(e.a);
+  return (e.c0 ? "c. " : "") + e.a + " – " + (e.c1 ? "c. " : "") + e.b;
+}
+function membersOf(p){
+  if (p.row === "macro") return ALL.filter(e => e.root && flOf(e) >= p.a && flOf(e) < p.b && CARD[e.id]);
+  const r = ROWS.find(r => r.id === p.row);
+  if (p.lvl === 1) return r.members.filter(m => m.root === p.id);
+  if (p.row === "li" || p.row === "le") return r.members.filter(m => m.per && m.per.includes(p.id));
+  return r.members.filter(m => { const y = flOf(m); return y >= p.a && y < p.b; });
+}
+cv.addEventListener("mouseover", ev => {
+  if (drag) return;
+  const t = ev.target.closest(".item,.band,.mark,.era"); if (!t) return;
+  const e = BY[t.dataset.id];
+  const hint = t.classList.contains("l1") ? `<br><small>clic per ${open.has(e.id) ? "chiudere" : "aprire"} · <b>i</b> per la scheda</small>` : "";
+  tip.innerHTML = `<b>${e.n}</b><em>${dateLabel(e)}</em>${e.sub ? " · " + e.sub : ""}${hint}`;
+  tip.style.opacity = 1;
+  if (t.classList.contains("band")){
+    const m = new Set(membersOf(e).map(x => x.id));
+    if (m.size){ cv.classList.add("focus"); cv.querySelectorAll(".item,.mark").forEach(x => x.classList.toggle("hl", m.has(x.dataset.id))); }
+  }
+});
+cv.addEventListener("mousemove", ev => {
+  tip.style.left = Math.min(ev.clientX + 14, innerWidth - tip.offsetWidth - 8) + "px";
+  tip.style.top = Math.min(ev.clientY + 18, innerHeight - tip.offsetHeight - 8) + "px";
+});
+cv.addEventListener("mouseout", ev => {
+  const t = ev.target.closest(".item,.band,.mark,.era"); if (!t) return;
+  if (ev.relatedTarget && t.contains(ev.relatedTarget)) return;
+  tip.style.opacity = 0; cv.classList.remove("focus");
+  cv.querySelectorAll(".hl").forEach(x => x.classList.remove("hl"));
+});
+cv.addEventListener("click", ev => {
+  if (moved) return;
+  const rt = ev.target.closest("[data-rowtoggle]");
+  if (rt){ const r = ROWS.find(r => r.id === rt.dataset.rowtoggle); const any = r.periods.some(p => open.has(p.id)); r.periods.forEach(p => any ? open.delete(p.id) : open.add(p.id)); render(); return; }
+  const t = ev.target.closest(".item,.band,.mark,.era"); if (!t) return;
+  if (t.classList.contains("l1") && !ev.target.closest(".info")){ tip.style.opacity = 0; toggle(t.dataset.id); return; }
+  openEntry(t.dataset.id);
+});
+
+/* ---------- barra «Vai a»: i periodi della letteratura italiana ---------- */
+const pnav = $("#pnav");
+LIT.forEach(p => {
+  const b = document.createElement("button"); b.textContent = p.n.replace("Il Trecento: le Tre Corone","Trecento").replace("L'Italia unita: Carducci e il Verismo","Italia unita"); b.dataset.id = p.id;
+  b.style.setProperty("--c", p.c);
+  b.onclick = () => { open.add(p.id); render(); scrollToYear((Math.max(p.a,1200) + p.b) / 2); setTimeout(() => revealBox(p.id), 350); };
+  pnav.appendChild(b);
+});
+pnav.insertAdjacentHTML("beforeend", `<span id="status"></span>`);
+const statusEl = $("#status");
+let lastOn = null;
+function updateStatus(){
+  const y = Math.round(centerYear());
+  const i = LIT.find(p => p.a <= y && p.b > y), h = HITP.find(p => p.a <= y && p.b > y);
+  if (i && lastOn !== i.id){
+    lastOn = i.id;
+    pnav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.id === i.id));
+    const on = pnav.querySelector("button.on");
+    if (on) pnav.scrollTo({left: on.offsetLeft - pnav.clientWidth/2 + on.offsetWidth/2, behavior:"smooth"});
+  }
+  statusEl.innerHTML = `<b>${Math.max(START, Math.min(END, y))}</b>${h ? " · " + h.n : ""}`;
+}
+vp.addEventListener("scroll", () => { updateStatus(); drawMini(); });
+
+/* ---------- minimappa: le quattro fasce ---------- */
+const mm = $("#mm"), mctx2 = mm.getContext("2d");
+function drawMini(){
+  const dpr = devicePixelRatio || 1, w = mm.clientWidth, h = mm.clientHeight;
+  if (!w) return;
+  if (mm.width !== Math.round(w * dpr)){ mm.width = Math.round(w * dpr); mm.height = Math.round(h * dpr); }
+  mctx2.setTransform(dpr,0,0,dpr,0,0); mctx2.clearRect(0,0,w,h);
+  const mx = y => (y - START) / (END - START) * w;
+  ROWS.forEach((r, i) => r.periods.forEach(p => { mctx2.fillStyle = p.c; mctx2.fillRect(mx(p.a), 1 + i * 7.5, Math.max(1, mx(p.b) - mx(p.a) - 1), 6); }));
+  mctx2.fillStyle = "#5b6b7a"; mctx2.font = "600 9px 'Titillium Web'";
+  for (let y = 1200; y <= 1900; y += 100) mctx2.fillText(y, mx(y) + 2, h - 1);
+  const y0 = START + (vp.scrollLeft - 24) / PPY, y1 = y0 + (vp.clientWidth - labw()) / PPY;
+  mctx2.fillStyle = "rgba(255,255,255,.4)"; mctx2.fillRect(mx(y0), 0, mx(y1) - mx(y0), h - 2);
+  mctx2.strokeStyle = "#d1344c"; mctx2.lineWidth = 2; mctx2.strokeRect(mx(y0), 1, mx(y1) - mx(y0), h - 3);
+}
+let mmDrag = false;
+const mmGo = ev => { const r = mm.getBoundingClientRect(); scrollToYear(START + (ev.clientX - r.left) / r.width * (END - START), false); };
+mm.addEventListener("pointerdown", ev => { mmDrag = true; mm.setPointerCapture(ev.pointerId); mmGo(ev); });
+mm.addEventListener("pointermove", ev => { if (mmDrag) mmGo(ev); });
+mm.addEventListener("pointerup", () => mmDrag = false);
+
+/* ---------- scheda enciclopedica ---------- */
+const dlg = $("#dlg"), dh = $("#dh"), db = $("#db");
+function xref(html){
+  return html.replace(/\[\[([\w-]+)(?:\|([^\]]+))?\]\]/g, (m, id, txt) =>
+    BY[id] ? `<a class="xref" data-id="${id}">${txt || BY[id].n}</a>` : (txt || id));
+}
+function chip(e){ const c = colorOf(e); return `<button data-id="${e.id}" style="--c:${c};--tc:${textOn(c)}">${e.big ? "★ " : ""}${e.n}</button>`; }
+function openEntry(id){
+  const e = BY[id]; if (!e) return;
+  const c = colorOf(e);
+  dh.style.setProperty("--c", c); dh.style.setProperty("--tc", textOn(c));
+  const isP = !!e.lvl;
+  const kind = isP ? (e.lvl === 2 ? "Articolazione" : "Periodo") : e.k === "e" ? "Evento" : (e.row === "li" || e.row === "le") ? "Autore" : "Personaggio";
+  dh.innerHTML = `<button class="x" aria-label="Chiudi">×</button>
+    <div class="kick">${ROWNAME[e.row]} · ${kind}</div>
+    <h2>${e.n}</h2>
+    <div class="dates">${e.d || dateLabel(e)}</div>
+    ${e.sub ? `<p class="dsub">${e.sub}</p>` : ""}`;
+  let h = "";
+  if (isP && e.lvl === 2) h += `<div class="chips" style="margin-bottom:14px">${chip(BY[PARENT[e.id]])}</div>`;
+  if (e.per && e.per.length) h += `<div class="chips" style="margin-bottom:14px">${e.per.map(p => chip(BY[p])).join("")}</div>`;
+  h += xref(e.t || "");
+  if (e.w && e.w.length) h += `<h3>Opere principali</h3><ul class="works">${e.w.map(([y,t,n]) => `<li><b>${y}</b><span><i>${t}</i>${n ? " — " + n : ""}</span></li>`).join("")}</ul>`;
+  if (e.x && e.x.length) h += `<h3>Parole chiave</h3><ul class="temi">${e.x.map(t => `<li>${t}</li>`).join("")}</ul>`;
+  if (e.q) h += `<h3>Da ricordare</h3><blockquote>«${e.q[0]}»<cite>${e.q[1]}</cite></blockquote>`;
+  if (isP && e.kidsList && e.kidsList.length) h += `<h3>Articolazione interna</h3><div class="chips">${e.kidsList.map(chip).join("")}</div>`;
+  if (isP){
+    const m = membersOf(e).sort((a,b) => a.a - b.a);
+    if (m.length) h += `<h3>${e.row === "li" || e.row === "le" ? "Autori" : "Protagonisti ed eventi"}</h3><div class="chips">${m.map(chip).join("")}</div>`;
+  }
+  if (e.rel && e.rel.length) h += `<h3>Vedi anche</h3><div class="chips">${e.rel.filter(r => BY[r]).map(r => chip(BY[r])).join("")}</div>`;
+  if (e.row !== "macro") h += `<button class="show" data-show="${e.id}">↦ Mostra sulla linea del tempo</button>`;
+  db.innerHTML = h; db.scrollTop = 0;
+  if (!dlg.open) dlg.showModal();
+  tip.style.opacity = 0;
+}
+dlg.addEventListener("click", ev => {
+  if (ev.target === dlg || ev.target.closest(".x")) { dlg.close(); return; }
+  const s = ev.target.closest("[data-show]");
+  if (s){ dlg.close(); flashTo(s.dataset.show); return; }
+  const a = ev.target.closest("[data-id]");
+  if (a) openEntry(a.dataset.id);
+});
+function flashTo(id){
+  if (MQ.matches){ mobFlash(id); return; }
+  const e = BY[id];
+  const root = e.root || PARENT[id] || (e.lvl === 1 && e.kidsList.length ? id : null);
+  if (root && !open.has(root)){ open.add(root); render(); }
+  scrollToYear(e.b ? (e.a + Math.min(e.b, e.a + 40)) / 2 : e.a);
+  const t = cv.querySelector(`.item[data-id="${id}"],.band[data-id="${id}"],.mark[data-id="${id}"]`);
+  if (t){
+    const top = t.offsetTop + t.parentElement.offsetTop;
+    vp.scrollTo({top: Math.max(0, top - vp.clientHeight / 2), behavior: "smooth"});
+    t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
+  }
+}
+
+/* ---------- ricerca ---------- */
+const q = $("#q"), res = $("#results");
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+let hits = [], sel = 0;
+q.addEventListener("input", () => {
+  const s = norm(q.value.trim());
+  if (s.length < 2){ res.style.display = "none"; return; }
+  hits = ALL.filter(e => norm(e.n).includes(s) || (e.sub && norm(e.sub).includes(s)))
+            .sort((a,b) => (norm(b.n).startsWith(s)?1:0) - (norm(a.n).startsWith(s)?1:0) || (b.big?1:0)-(a.big?1:0)).slice(0, 9);
+  sel = 0; showHits();
+});
+function showHits(){
+  res.innerHTML = hits.length ? hits.map((e,i) => `<button data-i="${i}" class="${i===sel?"sel":""}"><i style="background:${colorOf(e)}"></i>${e.n}<small>${dateLabel(e)}</small></button>`).join("")
+                              : `<button disabled>Nessun risultato</button>`;
+  res.style.display = "block";
+}
+function pick(i){ const e = hits[i]; if (!e) return; res.style.display = "none"; q.value = ""; q.blur(); flashTo(e.id); setTimeout(() => openEntry(e.id), 800); }
+res.addEventListener("click", ev => { const b = ev.target.closest("[data-i]"); if (b) pick(+b.dataset.i); });
+q.addEventListener("keydown", ev => {
+  if (ev.key === "ArrowDown"){ sel = Math.min(sel+1, hits.length-1); showHits(); ev.preventDefault(); }
+  else if (ev.key === "ArrowUp"){ sel = Math.max(sel-1, 0); showHits(); ev.preventDefault(); }
+  else if (ev.key === "Enter") pick(sel);
+  else if (ev.key === "Escape"){ res.style.display = "none"; q.blur(); }
+});
+document.addEventListener("click", ev => { if (!ev.target.closest(".search")) res.style.display = "none"; });
+
+/* tastiera */
+addEventListener("keydown", ev => {
+  if (dlg.open || document.activeElement === q) return;
+  if (ev.key === "ArrowRight") vp.scrollBy({left: 300, behavior:"smooth"});
+  else if (ev.key === "ArrowLeft") vp.scrollBy({left: -300, behavior:"smooth"});
+  else if (ev.key === "+" || ev.key === "=") zoom(1.25);
+  else if (ev.key === "-") zoom(0.8);
+});
+
+/* ---------- logo (sigillo inventato: colonna ionica e alloro) ---------- */
+function buildLogo(){
+  let leaves = "";
+  for (const side of [-1, 1]) for (let i = 0; i < 9; i++){
+    const a = (200 + i * 15) * Math.PI / 180, r = 37;
+    const x = 60 - side * Math.cos(a) * r, y = 64 + Math.sin(a) * r;
+    leaves += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="6.5" ry="2.6" fill="#c99a2e" transform="rotate(${side < 0 ? -60 + i*15 : 60 - i*15} ${x.toFixed(1)} ${y.toFixed(1)})"/>`;
+  }
+  $("#logo").innerHTML = `
+   <defs><path id="arc" d="M 60 60 m -46 0 a 46 46 0 1 1 92 0 a 46 46 0 1 1 -92 0"/></defs>
+   <circle cx="60" cy="60" r="58" fill="#0f2438" stroke="#c99a2e" stroke-width="2.5"/>
+   <circle cx="60" cy="60" r="52" fill="none" stroke="#c99a2e" stroke-width=".8" opacity=".7"/>
+   <text font-family="Cinzel,serif" font-size="9.2" font-weight="700" fill="#f3e3b5" letter-spacing="1.6"><textPath href="#arc" startOffset="1%">LICEO CLASSICO · F. VIVONA · ROMA ·</textPath></text>
+   <circle cx="60" cy="60" r="39" fill="#17324d"/>
+   ${leaves}
+   <g fill="#f6f1e6">
+     <rect x="44" y="38" width="32" height="4" rx="1"/>
+     <circle cx="45" cy="44.5" r="4.2"/><circle cx="75" cy="44.5" r="4.2"/>
+     <rect x="47" y="42" width="26" height="4"/>
+     <rect x="50" y="47" width="20" height="30"/>
+     <rect x="46" y="77" width="28" height="3.5" rx="1"/>
+     <rect x="43" y="81" width="34" height="4" rx="1"/>
+   </g>
+   <circle cx="45" cy="44.5" r="1.6" fill="#17324d"/><circle cx="75" cy="44.5" r="1.6" fill="#17324d"/>
+   <g stroke="#17324d" stroke-width="1.3"><line x1="54" y1="48" x2="54" y2="76"/><line x1="58" y1="48" x2="58" y2="76"/><line x1="62" y1="48" x2="62" y2="76"/><line x1="66" y1="48" x2="66" y2="76"/></g>
+   <text x="60" y="34" text-anchor="middle" font-family="Cinzel,serif" font-size="9" font-weight="700" fill="#c99a2e">Φ · V</text>`;
+}
+
+/* =====================================================================
+   VERSIONE MOBILE — linea del tempo verticale a scatole
+   Stessi dati: i periodi delle quattro fasce scorrono dall'alto in
+   basso per secolo; ogni periodo si apre nelle sue articolazioni e
+   nei suoi protagonisti; ogni nome apre la scheda dal basso.
+   ===================================================================== */
+const MQ = matchMedia("(max-width: 760px)");
+const mob = $("#mob");
+const hiddenRows = new Set();
+let mobBuilt = false;
+const yr = a => a < 1200 ? "fine XII sec." : a;
+function kidsMembers(p, k){
+  const r = ROWS.find(r => r.id === p.row);
+  return (p.row === "li" || p.row === "le")
+    ? r.members.filter(m => m.root === p.id && m.per && m.per.includes(k.id))
+    : r.members.filter(m => m.root === p.id && flOf(m) >= k.a && flOf(m) < k.b);
+}
+function mRow(m){
+  return `<button class="mm${m.big ? " big" : ""}${m.k === "e" ? " ev" : ""}" data-id="${m.id}" style="--c:${colorOf(m)}"><i class="dot"></i><span class="mm-n">${m.n}</span><span class="mm-d">${dateLabel(m)}</span>${m.sub ? `<span class="mm-s">${m.sub}</span>` : ""}</button>`;
+}
+function fillCard(card){
+  if (card.dataset.filled) return;
+  const p = BY[card.dataset.pid], r = ROWS.find(r => r.id === p.row);
+  const all = r.members.filter(m => m.root === p.id).sort((a,b) => a.a - b.a);
+  let h = `<button class="mc-info" data-id="${p.id}">ⓘ Scheda del periodo</button>`;
+  const placed = new Set();
+  for (const k of p.kidsList){
+    const ms = kidsMembers(p, k).sort((a,b) => a.a - b.a);
+    ms.forEach(m => placed.add(m.id));
+    h += `<details class="mk" data-kid="${k.id}" style="--c:${k.c}"><summary>${k.n}<small>${yr(k.a)}–${k.b}${ms.length ? " · " + ms.length : ""}</small></summary>
+      <div class="mlist"><button class="mk-i" data-id="${k.id}">Che cos'è?</button>${ms.map(mRow).join("")}</div></details>`;
+  }
+  const rest = all.filter(m => !placed.has(m.id));
+  if (rest.length){
+    h += `<div class="mlh">${p.kidsList.length ? "Altri protagonisti" : (p.row === "li" || p.row === "le") ? "Autori" : "Protagonisti ed eventi"}</div>`;
+    h += `<div class="mlist">${rest.map(mRow).join("")}</div>`;
+  }
+  card.querySelector(".mc-b").innerHTML = h;
+  card.dataset.filled = 1;
+}
+function buildMobile(){
+  mobBuilt = true;
+  const strands = ROWS.map(r => `<button class="m-f" data-strand="${r.id}" style="--g:${r.g}">${r.label}</button>`).join("");
+  let cents = ""; for (let c = 13; c <= 20; c++) cents += `<button class="m-c" data-cent="${c}">${roman(c)}</button>`;
+  // periodi di primo livello di tutte le fasce + soglie delle grandi età, in ordine cronologico
+  const order = {macro:-1, he:0, hi:1, le:2, li:3};
+  const ev = [...MACRO.map(e => ({e, era:1})), ...ROWS.flatMap(r => r.periods.map(e => ({e})))]
+    .sort((x,y) => Math.max(x.e.a,1200) - Math.max(y.e.a,1200) || order[x.e.row] - order[y.e.row]);
+  let html = `<div class="m-top"><div class="m-row">${strands}</div><div class="m-row">${cents}</div></div>`;
+  for (let c = 13; c <= 20; c++){
+    const from = (c-1)*100, to = from + 99;
+    html += `<section class="m-sec" data-cent="${c}"><div class="m-sh"><b>${roman(c)} secolo</b><small>${c === 20 ? "1900 – 1925" : from + " – " + to}</small></div>`;
+    for (const {e, era} of ev.filter(x => { const a = Math.max(x.e.a, 1200); return a >= from && a <= to; })){
+      if (era){ html += `<button class="m-era" data-id="${e.id}" style="--c:${e.c}">${e.a < 1200 ? "" : e.a + " · "}${e.n}<span>scheda ›</span></button>`; continue; }
+      const r = ROWS.find(r => r.id === e.row);
+      const cards = r.members.filter(m => CARD[m.id] && m.root === e.id).sort((a,b) => CARD[a.id][0] - CARD[b.id][0])
+        .map(m => `<span>${r.id === "li" || r.id === "le" ? "<i>★</i> " : ""}${CARD[m.id][1]}</span>`).join("");
+      html += `<details class="mc" data-pid="${e.id}" data-row="${r.id}" style="--c:${e.c};--tc:${textOn(e.c)};--g:${r.g}">
+        <summary><span class="mc-tag">${r.label}</span><span class="mc-t">${e.n}</span><span class="mc-d">${yr(e.a)} – ${e.b > 1920 ? "1925" : e.b}</span>${cards ? `<span class="mc-cards">${cards}</span>` : ""}</summary>
+        <div class="mc-b"></div></details>`;
+    }
+    html += `</section>`;
+  }
+  html += `<div class="m-foot">Materiale didattico per gli studenti del Liceo Classico «Francesco Vivona» · Roma<br>Tocca un periodo per aprirlo, un nome per la sua scheda.<br><small>Non è una pubblicazione ufficiale dell'istituto.</small></div>`;
+  mob.innerHTML = html;
+  const top = mob.querySelector(".m-top");
+  const setTop = () => mob.style.setProperty("--mtop", top.offsetHeight + "px");
+  setTop(); new ResizeObserver(setTop).observe(top);
+  mob.addEventListener("toggle", ev => { if (ev.target.classList.contains("mc") && ev.target.open) fillCard(ev.target); }, true);
+  mob.addEventListener("click", ev => {
+    const f = ev.target.closest("[data-strand]");
+    if (f){
+      const id = f.dataset.strand;
+      if (hiddenRows.has(id)) hiddenRows.delete(id); else if (hiddenRows.size < 3) hiddenRows.add(id);
+      mob.querySelectorAll(".m-f").forEach(b => b.classList.toggle("off", hiddenRows.has(b.dataset.strand)));
+      mob.querySelectorAll(".mc").forEach(c => c.hidden = hiddenRows.has(c.dataset.row));
+      return;
+    }
+    const c = ev.target.closest("button[data-cent]");
+    if (c){ const s = mob.querySelector(`section[data-cent="${c.dataset.cent}"]`); mob.scrollTo({top: s.offsetTop - top.offsetHeight + 1, behavior:"smooth"}); return; }
+    const t = ev.target.closest("[data-id]");
+    if (t){ ev.preventDefault(); openEntry(t.dataset.id); }
+  });
+  // il secolo in vista è evidenziato nella barra
+  const cbtn = [...mob.querySelectorAll(".m-c")], secs = [...mob.querySelectorAll("section")];
+  let cur = null;
+  mob.addEventListener("scroll", () => {
+    const y = mob.scrollTop + top.offsetHeight + 10;
+    let s = secs[0]; for (const x of secs) if (x.offsetTop <= y) s = x;
+    if (s.dataset.cent !== cur){
+      cur = s.dataset.cent;
+      cbtn.forEach(b => b.classList.toggle("on", b.dataset.cent === cur));
+      const on = cbtn.find(b => b.classList.contains("on"));
+      on.parentElement.scrollTo({left: on.offsetLeft - 60, behavior:"smooth"});
+    }
+  }, {passive:true});
+  mob.dispatchEvent(new Event("scroll"));
+}
+function mobFlash(id){
+  const e = BY[id];
+  if (e.row === "macro"){ const b = mob.querySelector(`.m-era[data-id="${id}"]`); if (b) b.scrollIntoView({behavior:"smooth", block:"center"}); return; }
+  const pid = e.root || PARENT[id] || id;
+  const card = mob.querySelector(`.mc[data-pid="${pid}"]`); if (!card) return;
+  if (card.hidden){
+    hiddenRows.delete(card.dataset.row);
+    mob.querySelector(`.m-f[data-strand="${card.dataset.row}"]`).classList.remove("off");
+    mob.querySelectorAll(`.mc[data-row="${card.dataset.row}"]`).forEach(c => c.hidden = false);
+  }
+  card.open = true; fillCard(card);
+  let t = PARENT[id] ? card.querySelector(`.mk[data-kid="${id}"]`) : card.querySelector(`.mm[data-id="${id}"]`);
+  t = t || card;
+  const k = t.closest(".mk"); if (k) k.open = true;
+  requestAnimationFrame(() => {
+    const r = t.getBoundingClientRect(), mr = mob.getBoundingClientRect();
+    mob.scrollTo({top: mob.scrollTop + r.top - mr.top - mob.clientHeight / 3, behavior:"smooth"});
+    t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
+  });
+}
+function applyMode(){
+  const m = MQ.matches;
+  document.body.classList.toggle("mobile", m);
+  if (m){ if (!mobBuilt) buildMobile(); }
+  else { render(); scrollToYear(1290, false); }
+}
+
+/* ---------- avvio ---------- */
+buildLogo();
+// i caratteri da Google Fonts possono non arrivare (offline, anteprime): dopo 1,5 s si parte comunque
+let started = false;
+const start = () => { if (started) return; started = true; applyMode(); };
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(start, start);
+setTimeout(start, 1500);
+if (MQ.addEventListener) MQ.addEventListener("change", applyMode); else if (MQ.addListener) MQ.addListener(applyMode);
+let rz;
+addEventListener("resize", () => { if (MQ.matches) return; clearTimeout(rz); rz = setTimeout(() => { const y = centerYear(); render(); scrollToYear(y, false); }, 120); });
+</script>
+</body>
+</html>
